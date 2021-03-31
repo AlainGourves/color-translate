@@ -7,7 +7,28 @@
     <link rel="stylesheet" href="./css/sty.css">
 </head>
 <body>
-    
+    <div id="clr-sample"></div>
+    <main>
+        <div class="sample"></div>
+        <label for="clr-input">Entrée !</label>
+        <input type="text" name="clr-input" id="clr-input" placeholder="rgb(232, 62, 140)...">
+        <section id="leHex">
+            <label for="clr-hex">hex</label>
+            <input type="text" name="clr-hex" id="clr-hex">
+            <button class="copy">Copy</button>
+        </section>
+        <section class="leRgb">
+            <label for="clr-rgb">rgb</label>
+            <input type="text" name="clr-rgb" id="clr-rgb">
+            <button class="copy">Copy</button>
+        </section>
+        <section class="leHsl">
+            <label for="clr-hsl">hsl</label>
+            <input type="text" name="clr-hsl" id="clr-hsl">
+            <button class="copy">Copy</button>
+        </section>
+    </main>
+    <script src="./js/myColor.js"></script>
     <script src="./js/main.js"></script>
 </body>
 </html>

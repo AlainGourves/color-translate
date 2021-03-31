@@ -1,4 +1,6 @@
 @import 'mixins';
+@import 'switches';
+
 
 *,
 *::before,
@@ -35,4 +37,10 @@ nav ul {
 ul a {
   text-decoration: none;
   display: inline-block;
+}
+
+#clr-sample{
+  @include size(6rem);
+  border: 1px solid red;
+  background-color: inherit;
 }
