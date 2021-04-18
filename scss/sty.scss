@@ -17,6 +17,7 @@ $rayon: 1.2rem;
   --fondPage: hsl(45, 21%, 93%);
   --clr-1: fuchsia;
   --clr-2: limegreen;
+  --clr-grey: 0, 0%, 40%;
   --rad: 0.4rem;
 
 
@@ -46,7 +47,7 @@ main {
 }
 
 label,
-button{
+button {
   cursor: pointer;
 }
 
@@ -158,21 +159,21 @@ input[type="text"] {
       z-index: -1;
     }
   }
-  
+
   .checkbox:checked~label {
     background-color: var(--clr-1);
-    
+
     &::before,
     &::after {
       transform: translatey(-50%) rotate(calc(var(--angleRotation) * -1));
     }
-    
+
     &::after {
       border-color: transparent transparent transparent var(--clr-1);
     }
   }
 }
-  
+
 .choice {
   justify-self: start;
   align-self: center;
@@ -201,26 +202,48 @@ input[type="text"] {
     width: var(--w);
     height: var(--h);
     border-radius: calc(var(--h) / 2);
-    background-color: var(--clr-1);
+    background-color: hsl(var(--clr-grey));
     transition: background-color .25s linear;
     box-shadow: var(--bsh) inset;
 
-    &::before {
+    &::before,
+    &::after {
       content: '';
       position: absolute;
+      border-radius: 50%;
+      transition: left .125s linear;
+    }
+
+    &::before{
       width: calc(var(--h) - (var(--m) * 2));
       height: calc(var(--h) - (var(--m) * 2));
-      border-radius: 50%;
-      background: var(--clr-2);
+      background: #fff;
       top: var(--m);
       left: var(--m);
       box-shadow: var(--bsh);
-      transition: left .125s linear,
-                  background-color .125s linear;
+    }
+
+    &:focus::after,
+    &:hover::after{
+      --l: 8px;
+      @include size(var(--l));
+      top: calc(var(--h)/2 - var(--l)/2);
+      left: calc(var(--h)/2 - var(--l)/2);
+      background-color: hsla(var(--clr-grey), .5);
+      z-index: 100;
     }
   }
 
-  input:checked + label::before {
-    left: calc(var(--w) - ((var(--h) - var(--m))));
+  input:checked+label {
+    background-color: var(--clr-1);
+
+    &::before {
+      left: calc(var(--w) - ((var(--h) - var(--m))));
+    }
+
+    &:focus::after,
+    &:hover::after{
+      left: calc(var(--w) - ((var(--h)/2 + var(--m))));
+    }
   }
 }

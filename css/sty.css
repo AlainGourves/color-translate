@@ -10,6 +10,7 @@
   --fondPage: hsl(45, 21%, 93%);
   --clr-1: fuchsia;
   --clr-2: limegreen;
+  --clr-grey: 0, 0%, 40%;
   --rad: 0.4rem;
   --rayon-knob: 1.2rem;
   --angleRotation: 20deg;
@@ -174,22 +175,39 @@ input[type=text]:focus {
   width: var(--w);
   height: var(--h);
   border-radius: calc(var(--h) / 2);
-  background-color: var(--clr-1);
+  background-color: hsl(var(--clr-grey));
   transition: background-color 0.25s linear;
   box-shadow: var(--bsh) inset;
 }
-.toggle label::before {
+.toggle label::before, .toggle label::after {
   content: "";
   position: absolute;
+  border-radius: 50%;
+  transition: left 0.125s linear;
+}
+.toggle label::before {
   width: calc(var(--h) - (var(--m) * 2));
   height: calc(var(--h) - (var(--m) * 2));
-  border-radius: 50%;
-  background: var(--clr-2);
+  background: #fff;
   top: var(--m);
   left: var(--m);
   box-shadow: var(--bsh);
-  transition: left 0.125s linear, background-color 0.125s linear;
+}
+.toggle label:focus::after, .toggle label:hover::after {
+  --l: 8px;
+  width: var(--l);
+  height: var(--l);
+  top: calc(var(--h)/2 - var(--l)/2);
+  left: calc(var(--h)/2 - var(--l)/2);
+  background-color: hsla(var(--clr-grey), 0.5);
+  z-index: 100;
+}
+.toggle input:checked + label {
+  background-color: var(--clr-1);
 }
 .toggle input:checked + label::before {
   left: calc(var(--w) - ((var(--h) - var(--m))));
+}
+.toggle input:checked + label:focus::after, .toggle input:checked + label:hover::after {
+  left: calc(var(--w) - ((var(--h)/2 + var(--m))));
 }

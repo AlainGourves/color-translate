@@ -21,8 +21,16 @@ class MyColor {
         this.hexField = document.getElementById('clr-hex');
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
-        this.sample = document.getElementById('clr-sample');
-        // this.sample = document.getElementById('clr-sample');
+
+        this.settings = {
+            'separators': {
+                'values': true,
+                'transparency': true
+            },
+            'forceTransparency': true,
+            'RGBPercentages': false,
+            'HSLDegrees': false
+        };
         
         this.hexField.value = '';
         this.rgbField.value = '';
@@ -71,8 +79,8 @@ class MyColor {
             this.hexField.value = this.HEX();
             this.rgbField.value = this.RGB();
             this.hslField.value = this.HSL();
-            // this.sample.style.backgroundColor = this.RGB();
             document.body.style.backgroundColor = this.RGB();
+            console.table(this.settings);
         } catch (err) {
             console.error(err.message);
         }
@@ -225,20 +233,28 @@ class MyColor {
     }
 
     RGB() {
-        let output = (this._a < 1) ? 'rgba(' : 'rgb(';
-        output += Math.round(this._r * 255) + this.sep + Math.round(this._g * 255) + this.sep + Math.round(this._b * 255);
-        if (this._a < 1) {
-            output += this.sepAlpha + this._a;
+        let sep = (this.settings.separators.values) ? ', ' : ' ';
+        let sepAlpha = (this.settings.separators.transparency) ? ', ' : ' / ';
+        let percent = (this.settings.RGBPercentages) ? '%' : '';
+
+        let output = (this._a < 1 || this.settings.forceTransparency) ? 'rgba(' : 'rgb(';
+        output += Math.round(this._r * 255) + percent + sep + Math.round(this._g * 255) + percent + sep + Math.round(this._b * 255) + percent ;
+        if (this._a < 1 || this.settings.forceTransparency) {
+            output += sepAlpha + this._a;
         }
         output += ')';
         return output;
     }
 
     HSL() {
-        let output = (this._a < 1) ? 'hsla(' : 'hsl(';
-        output += this._h + this.sep + Math.round(this._s * 100) + '%' + this.sep + Math.round(this._l * 100) + '%';
-        if (this._a < 1) {
-            output += this.sepAlpha + this._a;
+        let sep = (this.settings.separators.values) ? ', ' : ' ';
+        let sepAlpha = (this.settings.separators.transparency) ? ', ' : ' / ';
+        let deg = (this.settings.HSLDegrees) ? 'deg' : '';
+
+        let output = (this._a < 1 || this.settings.forceTransparency) ? 'hsla(' : 'hsl(';
+        output += this._h + deg + sep + Math.round(this._s * 100) + '%' + sep + Math.round(this._l * 100) + '%';
+        if (this._a < 1 || this.settings.forceTransparency) {
+            output += sepAlpha + this._a;
         }
         output += ')';
         return output;
@@ -253,7 +269,7 @@ class MyColor {
         b = Math.round(this._b * 255).toString(16);
         if (b.length == 1) b = '0' + b;
         let output = r + g + b;
-        if (this._a < 1) output += Math.round(this._a * 255).toString(16);
+        if (this._a < 1 || this.settings.forceTransparency) output += Math.round(this._a * 255).toString(16);
         // on essaye de compacter le code sur 3/4 caractères si c'est possible
         const regex = /^(.)\1(.)\2(.)\3(?:(.)\4)?$/g;
         const matches = [...output.matchAll(regex)];
