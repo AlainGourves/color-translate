@@ -1,5 +1,38 @@
 const newColor = document.querySelector('#clr-input');
 
+const separatorValues = document.querySelector('#separator-values');
+const checkValues = separatorValues.querySelector('[type=checkbox]');
+const choicesValues = separatorValues.querySelectorAll('.choice');
+
+const separatorTrans = document.querySelector('#separator-trans');
+const checkTrans = separatorTrans.querySelector('[type=checkbox]');
+const choicesTrans = separatorTrans.querySelectorAll('.choice');
+
+window.addEventListener("load", e => {
+    if(checkValues && checkTrans){
+
+      checkValues.addEventListener('change', e => {
+            if (e.target.checked){
+              choicesValues[0].classList.remove('disabled');
+              choicesValues[1].classList.add('disabled');
+            }else{
+              choicesValues[0].classList.add('disabled');
+              choicesValues[1].classList.remove('disabled');
+            }
+        });
+
+      checkTrans.addEventListener('change', e => {
+            if (e.target.checked){
+              choicesTrans[0].classList.remove('disabled');
+              choicesTrans[1].classList.add('disabled');
+            }else{
+              choicesTrans[0].classList.add('disabled');
+              choicesTrans[1].classList.remove('disabled');
+            }
+        });
+    }
+});
+
 
 // const copyToClipboard = (str) => {
 //     const el = document.createElement('textarea');  // Create a <textarea> element

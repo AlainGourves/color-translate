@@ -22,6 +22,7 @@ class MyColor {
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
         this.sample = document.getElementById('clr-sample');
+        // this.sample = document.getElementById('clr-sample');
         
         this.hexField.value = '';
         this.rgbField.value = '';
@@ -70,7 +71,8 @@ class MyColor {
             this.hexField.value = this.HEX();
             this.rgbField.value = this.RGB();
             this.hslField.value = this.HSL();
-            this.sample.style.backgroundColor = this.RGB();
+            // this.sample.style.backgroundColor = this.RGB();
+            document.body.style.backgroundColor = this.RGB();
         } catch (err) {
             console.error(err.message);
         }

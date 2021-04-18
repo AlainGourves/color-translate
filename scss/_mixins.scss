@@ -1,3 +1,5 @@
+@use "sass:math";
+
 /// Width & height of a block
 /// If only one parameter is provided, it's a square !
 /// @param {Length} $width
@@ -13,4 +15,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/// Center vertically & horizontally with grid
+@mixin grid-center {
+    display: grid;
+    place-content: center;
+}
+
+// Pour les knobs
+/// Triangle "tangent" au cercle de rayon $rayon pointant vers la droite
+@mixin triangle($rayon, $angle, $couleur: red){
+    $angle: math.clamp(20deg, $angle, 140deg); // limite l'angle à un intervalle raisonnable
+    $angle: $angle / 2; // on travaille avec le demi angle
+    $hauteur: $rayon * math.cos($angle);
+    $largeur: $rayon * (math.cos($angle) / math.tan($angle));
+    $left: $rayon * math.sin($angle);
+    top: 50%;
+    left: calc(50% + #{$left});
+    transform-origin: $left*-1 50%;
+    border-style: solid;
+    border-width: $hauteur 0 $hauteur $largeur;
+    border-color: transparent transparent transparent $couleur;
 }

@@ -1,34 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./css/sty.css">
 </head>
+
 <body>
-    <div id="clr-sample"></div>
     <main>
-        <div class="sample"></div>
-        <label for="clr-input">Entrée !</label>
-        <input type="text" name="clr-input" id="clr-input" placeholder="rgb(232, 62, 140)...">
-        <section id="leHex">
+        <section id="leInput" class="col">
+            <label for="clr-input">Entrée !</label>
+            <input type="text" name="clr-input" id="clr-input" placeholder="rgb(232, 62, 140)...">
+        </section>
+        <section id="leMessage"></section>
+        <section id="leHex" class="col">
             <label for="clr-hex">hex</label>
-            <input type="text" name="clr-hex" id="clr-hex">
+            <input type="text" name="clr-hex" id="clr-hex" readonly>
             <button class="copy">Copy</button>
         </section>
-        <section class="leRgb">
+        <section id="leRgb" class="col">
             <label for="clr-rgb">rgb</label>
-            <input type="text" name="clr-rgb" id="clr-rgb">
+            <input type="text" name="clr-rgb" id="clr-rgb" readonly>
             <button class="copy">Copy</button>
         </section>
-        <section class="leHsl">
+        <section id="leHsl" class="col">
             <label for="clr-hsl">hsl</label>
-            <input type="text" name="clr-hsl" id="clr-hsl">
+            <input type="text" name="clr-hsl" id="clr-hsl" readonly>
             <button class="copy">Copy</button>
         </section>
     </main>
+    <div id="settings">
+        <div>Separators</div>
+        <div class="ligne">
+            <div>Values</div>
+            <div id="separator-values" class="knob_wrap">
+                <div class="knob">
+                    <input type="checkbox" id="check-val" class="checkbox" checked="">
+                    <label for="check-val"></label>
+                </div>
+                <div class="choice">Comma</div>
+                <div class="choice disabled">Space</div>
+            </div>
+        </div>
+        <div class="ligne">
+            <div>Transparency</div>
+            <div id="separator-trans" class="knob_wrap">
+                <div class="knob">
+                    <input type="checkbox" id="check-trans" class="checkbox" checked="">
+                    <label for="check-trans"></label>
+                </div>
+                <div class="choice">Comma</div>
+                <div class="choice disabled">Slash</div>
+            </div>
+        </div>
+        <div class="ligne">
+            <div>Force transparency <span>(rgb<em>a</em>, hsl<em>a</em>)</span></div>
+            <div class="toggle">
+                <input type="checkbox" id="force-trans" class="checkbox">
+                <label for="force-trans"></label>
+            </div>
+        </div>
+        <div class="ligne">
+            <div>RGB Percentages</div>
+            <div class="toggle">
+                <input type="checkbox" id="rgb-perc" class="checkbox">
+                <label for="rgb-perc"></label>
+            </div>
+        </div>
+        <div class="ligne">
+            <div>HSL Degrees</div>
+            <div class="toggle">
+                <input type="checkbox" id="hsl-deg" class="checkbox">
+                <label for="hsl-deg"></label>
+            </div>
+        </div>
+    </div>
     <script src="./js/myColor.js"></script>
     <script src="./js/main.js"></script>
 </body>
+
 </html>
