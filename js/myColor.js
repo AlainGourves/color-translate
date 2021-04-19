@@ -1,6 +1,5 @@
-
 class MyColor {
-    constructor(input) {
+    constructor() {
         // Valeurs normalisées sur l'intervalle [0,1]
         this._r;
         this._g;
@@ -10,11 +9,11 @@ class MyColor {
         this._l;
         this._a = 1; // transparence default
         this._type; // 'rgb', 'hsl', 'hex'
-        
+
         this.regexHex = /#([0-9a-f]{3,8})/i;
         this.regexRgb = /rgba?\((.*?)\)/i;
         this.regexHsl = /hsla?\((.*?)\)/i;
-        
+
         this.sep = ', '; // par défaut, accepte aussi ' '
         this.sepAlpha = ', '; // par défaut, accepte aussi ' / '
 
@@ -22,20 +21,24 @@ class MyColor {
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
 
-        this.settings = {
-            'separators': {
-                'values': true,
-                'transparency': true
-            },
-            'forceTransparency': true,
-            'RGBPercentages': false,
-            'HSLDegrees': false
-        };
-        
+        if (!this._loadSettings()) {
+            this.settings = {
+                'separators': {
+                    'values': true,
+                    'transparency': true
+                },
+                'forceTransparency': false,
+                'RGBPercentages': false,
+                'HSLDegrees': false
+            };
+        }
+
         this.hexField.value = '';
         this.rgbField.value = '';
         this.hslField.value = '';
+    }
 
+    updateColor(input) {
         try {
             if (this.regexHex.test(input)) {
                 this._type = 'hex'
@@ -69,21 +72,25 @@ class MyColor {
             const lastCheck = [this._r, this._g, this._b, this._h, this._s, this._l, this._a];
             const tags = ['R', 'G', 'B', 'H', 'S', 'L', 'A'];
 
-            lastCheck.forEach((v,i) =>{
+            lastCheck.forEach((v, i) => {
                 if (isNaN(v)) {
                     let err = new Error(`Problème avec la valeur de "${tags[i]}".`);
                     throw err;
                 }
             });
 
-            this.hexField.value = this.HEX();
-            this.rgbField.value = this.RGB();
-            this.hslField.value = this.HSL();
-            document.body.style.backgroundColor = this.RGB();
+            this.update();
             console.table(this.settings);
         } catch (err) {
             console.error(err.message);
         }
+    }
+
+    update() {
+        this.hexField.value = this.HEX();
+        this.rgbField.value = this.RGB();
+        this.hslField.value = this.HSL();
+        document.body.style.backgroundColor = this.RGB();
     }
 
     _hsl2rgb() {
@@ -102,13 +109,13 @@ class MyColor {
         const xmax = Math.max(this._r, this._g, this._b);
         const xmin = Math.min(this._r, this._g, this._b);
         const chroma = xmax - xmin;
-        if (chroma == 0){
+        if (chroma == 0) {
             this._h = 0;
-        }else if (xmax == this._r) {
+        } else if (xmax == this._r) {
             this._h = 60 * (((this._g - this._b) / chroma) % 6);
-        }else if (xmax == this._g) {
+        } else if (xmax == this._g) {
             this._h = 60 * (((this._b - this._r) / chroma + 2) % 6);
-        }else if (xmax == this._b) {
+        } else if (xmax == this._b) {
             this._h = 60 * (((this._r - this._g) / chroma + 4) % 6);
         }
         this._h = Math.round(this._h);
@@ -238,7 +245,7 @@ class MyColor {
         let percent = (this.settings.RGBPercentages) ? '%' : '';
 
         let output = (this._a < 1 || this.settings.forceTransparency) ? 'rgba(' : 'rgb(';
-        output += Math.round(this._r * 255) + percent + sep + Math.round(this._g * 255) + percent + sep + Math.round(this._b * 255) + percent ;
+        output += Math.round(this._r * 255) + percent + sep + Math.round(this._g * 255) + percent + sep + Math.round(this._b * 255) + percent;
         if (this._a < 1 || this.settings.forceTransparency) {
             output += sepAlpha + this._a;
         }
@@ -259,7 +266,7 @@ class MyColor {
         output += ')';
         return output;
     }
-    
+
     HEX() {
         let r, g, b;
         r = Math.round(this._r * 255).toString(16);
@@ -273,10 +280,57 @@ class MyColor {
         // on essaye de compacter le code sur 3/4 caractères si c'est possible
         const regex = /^(.)\1(.)\2(.)\3(?:(.)\4)?$/g;
         const matches = [...output.matchAll(regex)];
-        if (matches.length > 0){
+        if (matches.length > 0) {
             output = matches[0][1] + matches[0][2] + matches[0][3];
             if (this._a < 1) output += matches[0][4];
         }
         return '#' + output;
+    }
+
+    updateSettings(what) {
+        // el contient l'id de l'input modifié
+        console.log("clicked: ", what)
+        const el = document.querySelector(`#${what}`)
+
+        if (what === 'check-val' || what === 'check-trans') {
+            let grandPa = el.parentElement.parentElement;
+            let choices = grandPa.querySelectorAll('.choice');
+            if (what === 'check-val') {
+                this.settings.separators.values = el.checked;
+            } else {
+                this.settings.separators.transparency = el.checked;
+            }
+            if (el.checked) {
+                choices[0].classList.remove('disabled');
+                choices[1].classList.add('disabled');
+            } else {
+                choices[0].classList.add('disabled');
+                choices[1].classList.remove('disabled');
+            }
+        } else if (what === 'force-trans') {
+            this.settings.forceTransparency = el.checked;
+        } else if (what === 'rgb-perc') {
+            this.settings.RGBPercentages = el.checked;
+        } else if (what === 'hsl-deg') {
+            this.settings.HSLDegrees = el.checked;
+        }
+        this._saveSettings();
+        this.update();
+    }
+
+    _saveSettings() {
+        // enregistrement localStorage
+        localStorage.setItem("settings", JSON.stringify(this.settings));
+        console.table(this.settings)
+    }
+
+    _loadSettings() {
+        // chargement localStorage
+        if (localStorage.getItem("settings")) {
+            this.settings = JSON.parse(localStorage.getItem("settings"));
+            return true;
+        } else {
+            return false;
+        }
     }
 }
