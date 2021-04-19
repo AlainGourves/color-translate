@@ -13,6 +13,7 @@ class MyColor {
         this.regexHex = /#([0-9a-f]{3,8})/i;
         this.regexRgb = /rgba?\((.*?)\)/i;
         this.regexHsl = /hsla?\((.*?)\)/i;
+        this.regexColor = /^([a-z]{3,})/i;
 
         this.sep = ', '; // par défaut, accepte aussi ' '
         this.sepAlpha = ', '; // par défaut, accepte aussi ' / '
@@ -39,50 +40,58 @@ class MyColor {
     }
 
     updateColor(input) {
-        try {
-            if (this.regexHex.test(input)) {
-                this._type = 'hex'
-            } else if (this.regexRgb.test(input)) {
-                this._type = 'rgb'
-            } else if (this.regexHsl.test(input)) {
-                this._type = 'hsl'
-            } else {
-                let err = new Error(`La chaîne "${input}" ne correspond à aucun type accepté.`);
-                throw err;
-            }
-
-            switch (this._type) {
-                case 'hex':
-                    this._getValuesFromHex(input);
-                    this._rgb2hsl();
-                    break;
-
-                case 'rgb':
-                    this._getValuesFromRGB(input);
-                    this._rgb2hsl();
-                    break;
-
-                case 'hsl':
-                    this._getValuesFromHSL(input);
-                    this._hsl2rgb();
-                    // conversion en RGB
-                    break;
-            }
-
-            const lastCheck = [this._r, this._g, this._b, this._h, this._s, this._l, this._a];
-            const tags = ['R', 'G', 'B', 'H', 'S', 'L', 'A'];
-
-            lastCheck.forEach((v, i) => {
-                if (isNaN(v)) {
-                    let err = new Error(`Problème avec la valeur de "${tags[i]}".`);
+        if (input.length > 0) {
+            try {
+                if (this.regexHex.test(input)) {
+                    this._type = 'hex'
+                } else if (this.regexRgb.test(input)) {
+                    this._type = 'rgb'
+                } else if (this.regexHsl.test(input)) {
+                    this._type = 'hsl'
+                } else if (this.regexColor.test(input)) {
+                    this._type = 'namedColor'
+                } else {
+                    let err = new Error(`La chaîne "${input}" ne correspond à aucun type accepté.`);
                     throw err;
                 }
-            });
 
-            this.update();
-            console.table(this.settings);
-        } catch (err) {
-            console.error(err.message);
+                switch (this._type) {
+                    case 'hex':
+                        this._getValuesFromHex(input);
+                        this._rgb2hsl();
+                        break;
+
+                    case 'rgb':
+                        this._getValuesFromRGB(input);
+                        this._rgb2hsl();
+                        break;
+
+                    case 'hsl':
+                        this._getValuesFromHSL(input);
+                        this._hsl2rgb();
+                        // conversion en RGB
+                        break;
+
+                    case 'namedColor':
+                        this._getValuesFromName(input);
+                        this._rgb2hsl();
+                        break;
+                }
+
+                const lastCheck = [this._r, this._g, this._b, this._h, this._s, this._l, this._a];
+                const tags = ['R', 'G', 'B', 'H', 'S', 'L', 'A'];
+
+                lastCheck.forEach((v, i) => {
+                    if (isNaN(v)) {
+                        let err = new Error(`Problème avec la valeur de "${tags[i]}".`);
+                        throw err;
+                    }
+                });
+
+                this.update();
+            } catch (err) {
+                console.error(err.message);
+            }
         }
     }
 
@@ -239,13 +248,37 @@ class MyColor {
         }
     }
 
+    _getValuesFromName(input) {
+        try {
+            let name = input.match(this.regexColor)[1];
+            // Vérifier que c'est bien une couleur nommée
+            let idx = colorNames.findIndex(e => {
+                return (e === name);
+            });
+            if (idx !== -1) {
+                this._r = (r[idx] / 255).toFixed(4) / 1;
+                this._g = (g[idx] / 255).toFixed(4) / 1;
+                this._b = (b[idx] / 255).toFixed(4) / 1;
+            } else {
+                let err = new Error(`"${name}" n'est pas le nom d'une couleur reconnue.`);
+                throw err;
+            }
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
+
     RGB() {
         let sep = (this.settings.separators.values) ? ', ' : ' ';
         let sepAlpha = (this.settings.separators.transparency) ? ', ' : ' / ';
-        let percent = (this.settings.RGBPercentages) ? '%' : '';
 
         let output = (this._a < 1 || this.settings.forceTransparency) ? 'rgba(' : 'rgb(';
-        output += Math.round(this._r * 255) + percent + sep + Math.round(this._g * 255) + percent + sep + Math.round(this._b * 255) + percent;
+        if (this.settings.RGBPercentages) {
+            output += Math.round(this._r * 100) + '%' + sep + Math.round(this._g * 100) + '%' + sep + Math.round(this._b * 100) + '%';
+        } else {
+            output += Math.round(this._r * 255) + sep + Math.round(this._g * 255) + sep + Math.round(this._b * 255);
+        }
         if (this._a < 1 || this.settings.forceTransparency) {
             output += sepAlpha + this._a;
         }
@@ -289,7 +322,6 @@ class MyColor {
 
     updateSettings(what) {
         // el contient l'id de l'input modifié
-        console.log("clicked: ", what)
         const el = document.querySelector(`#${what}`)
 
         if (what === 'check-val' || what === 'check-trans') {
@@ -314,20 +346,24 @@ class MyColor {
         } else if (what === 'hsl-deg') {
             this.settings.HSLDegrees = el.checked;
         }
-        this._saveSettings();
-        this.update();
-    }
-
-    _saveSettings() {
         // enregistrement localStorage
         localStorage.setItem("settings", JSON.stringify(this.settings));
-        console.table(this.settings)
+        if (this._r !== undefined) {
+            this.update();
+        }
     }
 
     _loadSettings() {
         // chargement localStorage
         if (localStorage.getItem("settings")) {
             this.settings = JSON.parse(localStorage.getItem("settings"));
+            // Màj des inputs
+            const el = document.querySelector('#settings');
+            el.querySelector('#check-val').checked = this.settings.separators.values;
+            el.querySelector('#check-trans').checked = this.settings.separators.transparency;
+            el.querySelector('#force-trans').checked = this.settings.forceTransparency;
+            el.querySelector('#rgb-perc').checked = this.settings.RGBPercentages;
+            el.querySelector('#hsl-deg').checked = this.settings.HSLDegrees;
             return true;
         } else {
             return false;

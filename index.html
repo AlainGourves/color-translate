@@ -12,7 +12,8 @@
     <main>
         <section id="leInput" class="col">
             <label for="clr-input">Entrée !</label>
-            <input type="text" name="clr-input" id="clr-input" placeholder="rgb(232, 62, 140)...">
+            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color...">
+            <datalist id="colors-list"></datalist>
         </section>
         <section id="leMessage"></section>
         <section id="leHex" class="col">
@@ -37,7 +38,7 @@
             <div>Values</div>
             <div id="separator-values" class="knob_wrap">
                 <div class="knob">
-                    <input type="checkbox" data-id="check-val" id="check-val" class="checkbox" checked="">
+                    <input type="checkbox" data-id="check-val" id="check-val" class="checkbox" checked>
                     <label for="check-val"></label>
                 </div>
                 <div class="choice">Comma</div>
@@ -48,7 +49,7 @@
             <div>Transparency</div>
             <div id="separator-trans" class="knob_wrap">
                 <div class="knob">
-                    <input type="checkbox" data-id="check-trans" id="check-trans" class="checkbox" checked="">
+                    <input type="checkbox" data-id="check-trans" id="check-trans" class="checkbox" checked>
                     <label for="check-trans"></label>
                 </div>
                 <div class="choice">Comma</div>
@@ -77,6 +78,7 @@
             </div>
         </div>
     </div>
+    <script src="./js/namedColors.js"></script>
     <script src="./js/myColor.js"></script>
     <script src="./js/main.js"></script>
 </body>
