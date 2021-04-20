@@ -1,5 +1,7 @@
 # Doc
 
+[Serializing color values](https://drafts.csswg.org/css-color/#serializing-color-values
+)
 [article css-tricks](https://css-tricks.com/converting-color-spaces-in-javascript/)
 
 liens :

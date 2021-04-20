@@ -3,8 +3,9 @@ const colorsList = document.querySelector('#colors-list')
 const newColor = document.querySelector('#clr-input');
 const settings = document.querySelector('#settings');
 
+let clr;
 window.addEventListener("load", e => {
-  let clr = new MyColor();
+  clr = new MyColor();
   newColor.addEventListener('change', e => {
     clr.updateColor(e.target.value);
   });
@@ -12,11 +13,12 @@ window.addEventListener("load", e => {
     clr.updateSettings(e.target.dataset.id)
   });
 
-  query.addEventListener('input', e => {
+  newColor.addEventListener('input', e => {
     let q = e.target.value;
-    if (q.length > 0) {
-      let matches = colorNames.filter(c => {
-        let regex = new RegExp(`^${q}`, 'i');
+    let regex = /^[a-z]+$/i;
+    if (q.length > 0 && regex.test(q)) {
+      regex = new RegExp(`^${q}`, 'i');
+      let matches = namedColors.filter(c => {
         return regex.test(c);
       });
       if (matches.length > 0) {

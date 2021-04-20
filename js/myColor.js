@@ -1,3 +1,4 @@
+// "use strict";
 class MyColor {
     constructor() {
         // Valeurs normalisées sur l'intervalle [0,1]
@@ -13,21 +14,16 @@ class MyColor {
         this.regexHex = /#([0-9a-f]{3,8})/i;
         this.regexRgb = /rgba?\((.*?)\)/i;
         this.regexHsl = /hsla?\((.*?)\)/i;
-        this.regexColor = /^([a-z]{3,})/i;
-
-        this.sep = ', '; // par défaut, accepte aussi ' '
-        this.sepAlpha = ', '; // par défaut, accepte aussi ' / '
+        this.regexColor = /^([a-z]{3,})$/i;
 
         this.hexField = document.getElementById('clr-hex');
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
+        this.message = document.getElementById('leMessage');
 
         if (!this._loadSettings()) {
             this.settings = {
-                'separators': {
-                    'values': true,
-                    'transparency': true
-                },
+                'separator': true,
                 'forceTransparency': false,
                 'RGBPercentages': false,
                 'HSLDegrees': false
@@ -51,7 +47,7 @@ class MyColor {
                 } else if (this.regexColor.test(input)) {
                     this._type = 'namedColor'
                 } else {
-                    let err = new Error(`La chaîne "${input}" ne correspond à aucun type accepté.`);
+                    let err = new Error(`"${input}" ne correspond à aucun type accepté.`);
                     throw err;
                 }
 
@@ -90,7 +86,8 @@ class MyColor {
 
                 this.update();
             } catch (err) {
-                console.error(err.message);
+                this._displayError(err.message);
+                return;
             }
         }
     }
@@ -103,7 +100,7 @@ class MyColor {
     }
 
     _hsl2rgb() {
-        // l'algorythme vient de https://en.wikipedia.org/wiki/HSL_and_HSV#Color_conversion_formulae
+        // les algorithmes viennent de https://en.wikipedia.org/wiki/HSL_and_HSV#Color_conversion_formulae
         const a = this._s * (Math.min(this._l, 1 - this._l));
         const theFunc = function (n, that) {
             const k = (n + (that._h / 30)) % 12;
@@ -128,6 +125,7 @@ class MyColor {
             this._h = 60 * (((this._r - this._g) / chroma + 4) % 6);
         }
         this._h = Math.round(this._h);
+        if (this._h < 0) this._h += 360;
         this._l = (xmax + xmin) / 2;
         this._s = (xmax == 0) ? 0 : chroma / (1 - Math.abs(2 * xmax - chroma - 1));
     }
@@ -144,134 +142,114 @@ class MyColor {
     }
 
     _getValuesFromHSL(input) {
-        try {
-            let vals = this._getValues(input);
+        let vals = this._getValues(input);
 
-            // H est dans l'intervalle 0-360 (et pas un %)
-            if (vals[0].indexOf('%') != -1 || vals[0] < 0 || vals[0] > 360) {
-                let err = new Error(`Hue doit être compris entre 0 et 360 : ${vals[0]}.`);
-                throw err;
-            } else if (vals[0].toLowerCase().indexOf('deg') != -1) {
-                // Supprime le 'deg' s'il est présent
-                vals[0] = vals[0].substr(0, vals[0].toLowerCase().indexOf('deg'));
-            }
-
-            for (let i = 1; i < 3; i++) {
-                // S et L doivent être des %
-                if (vals[i].indexOf('%') == -1) {
-                    let err = new Error(`"${vals[i]}" doit être un pourcentage.`);
-                    throw err;
-                } else {
-                    // on ne stocke pas le '%'
-                    vals[i] = (vals[i].substr(0, vals[i].length - 1) / 100).toFixed(3);
-                }
-            }
-            // transparence
-            if (vals[3] != undefined) {
-                // possibité d'un %
-                if (vals[3].indexOf('%') > -1) {
-                    vals[3] = (vals[3].substr(0, vals[3].length - 1) / 100).toFixed(3); // valeur entre 0 et 1, avec 3 décimales;
-                }
-            }
-
-            this._h = vals[0] / 1; // /1 permet de supprimer les 0 inutiles en décimale
-            this._s = vals[1] / 1;
-            this._l = vals[2] / 1;
-            if (vals[3] != undefined) this._a = vals[3] / 1
-        } catch (err) {
-            console.error(err);
-            return;
+        // H est dans l'intervalle 0-360 (et pas un %)
+        if (vals[0].indexOf('%') != -1 || vals[0] < 0 || vals[0] > 360) {
+            let err = new Error(`Hue doit être compris entre 0 et 360 : ${vals[0]}.`);
+            throw err;
+        } else if (vals[0].toLowerCase().indexOf('deg') != -1) {
+            // Supprime le 'deg' s'il est présent
+            vals[0] = vals[0].substr(0, vals[0].toLowerCase().indexOf('deg'));
         }
+
+        for (let i = 1; i < 3; i++) {
+            // S et L doivent être des %
+            if (vals[i].indexOf('%') == -1) {
+                let err = new Error(`"${vals[i]}" doit être un pourcentage.`);
+                throw err;
+            } else {
+                // on ne stocke pas le '%'
+                vals[i] = (vals[i].substr(0, vals[i].length - 1) / 100).toFixed(3);
+            }
+        }
+        // transparence
+        if (vals[3] != undefined) {
+            // possibité d'un %
+            if (vals[3].indexOf('%') > -1) {
+                vals[3] = (vals[3].substr(0, vals[3].length - 1) / 100).toFixed(3); // valeur entre 0 et 1, avec 3 décimales;
+            }
+        }
+
+        this._h = vals[0] / 1; // /1 permet de supprimer les 0 inutiles en décimale
+        this._s = vals[1] / 1;
+        this._l = vals[2] / 1;
+        if (vals[3] != undefined) this._a = vals[3] / 1
     }
 
     _getValuesFromRGB(input) {
-        try {
-            let vals = this._getValues(input);
+        let vals = this._getValues(input);
 
-            // valeurs R, G et B
-            for (let i = 0; i < 3; i++) {
-                // possibilité d'avoir une valeur en %
-                if (vals[i].indexOf('%') > -1) {
-                    vals[i] = vals[i].substr(0, vals[i].length - 1) / 100;
-                } else {
-                    vals[i] = vals[i] / 255
-                }
-                vals[i] = (vals[i]).toFixed(3); // limite à 3 décimales
+        // valeurs R, G et B
+        for (let i = 0; i < 3; i++) {
+            // possibilité d'avoir une valeur en %
+            if (vals[i].indexOf('%') > -1) {
+                vals[i] = vals[i].substr(0, vals[i].length - 1) / 100;
+            } else {
+                vals[i] = vals[i] / 255
             }
-            // transparence
-            if (vals[3] != undefined) {
-                // possibité d'un %
-                if (vals[3].indexOf('%') > -1) {
-                    vals[3] = vals[3].substr(0, vals[3].length - 1) / 100;
-                }
-            }
-
-            this._r = vals[0] / 1; // /1 permet de supprimer les 0 inutiles en décimale
-            this._g = vals[1] / 1;
-            this._b = vals[2] / 1;
-            if (vals[3] != undefined) this._a = vals[3] / 1
-        } catch (err) {
-            console.error(err);
-            return;
+            vals[i] = (vals[i]).toFixed(3); // limite à 3 décimales
         }
+        // transparence
+        if (vals[3] != undefined) {
+            // possibité d'un %
+            if (vals[3].indexOf('%') > -1) {
+                vals[3] = vals[3].substr(0, vals[3].length - 1) / 100;
+            }
+        }
+
+        this._r = vals[0] / 1; // /1 permet de supprimer les 0 inutiles en décimale
+        this._g = vals[1] / 1;
+        this._b = vals[2] / 1;
+        if (vals[3] != undefined) this._a = vals[3] / 1
     }
 
     _getValuesFromHex(input) {
-        try {
-            let hex = input.match(this.regexHex)[1];
-            if (hex.length == 3) {
-                // ramène à une chaîne de 6 caractères
-                hex = hex.replace(/(.)(.)(.)/, '$1$1$2$2$3$3');
-            }
-            if (hex.length == 4) {
-                // ramène à une chaîne de 8 caractères
-                hex = hex.replace(/(.)(.)(.)(.)/, '$1$1$2$2$3$3$4$4');
-            }
-            if ((hex.length !== 6) && (hex.length !== 8)) {
-                // le compte n'est pas bon : erreur TODO
-                let err = new Error(`La chaîne "${input}" n'est pas correcte.`);
-                throw err;
-            }
-            // Sépare les valeurs R,G,B,[A] et les renvoit sous forme de array
-            const regex = /^(..)(..)(..)(..)?$/g;
-            const matches = [...hex.matchAll(regex)];
+        let hex = input.match(this.regexHex)[1];
+        if (hex.length == 3) {
+            // ramène à une chaîne de 6 caractères
+            hex = hex.replace(/(.)(.)(.)/, '$1$1$2$2$3$3');
+        }
+        if (hex.length == 4) {
+            // ramène à une chaîne de 8 caractères
+            hex = hex.replace(/(.)(.)(.)(.)/, '$1$1$2$2$3$3$4$4');
+        }
+        if ((hex.length !== 6) && (hex.length !== 8)) {
+            // le compte n'est pas bon : erreur TODO
+            let err = new Error(`La chaîne "${input}" n'est pas correcte.`);
+            throw err;
+        }
+        // Sépare les valeurs R,G,B,[A] et les renvoit sous forme de array
+        const regex = /^(..)(..)(..)(..)?$/g;
+        const matches = [...hex.matchAll(regex)];
 
-            this._r = (parseInt('0x' + matches[0][1], 16) / 255).toFixed(3) / 1;
-            this._g = (parseInt('0x' + matches[0][2], 16) / 255).toFixed(3) / 1;
-            this._b = (parseInt('0x' + matches[0][3], 16) / 255).toFixed(3) / 1;
-            if (matches[0][4] !== undefined) {
-                this._a = (parseInt('0x' + matches[0][4], 16) / 255).toFixed(3) / 1;
-            }
-        } catch (err) {
-            console.error(err);
-            return;
+        this._r = (parseInt('0x' + matches[0][1], 16) / 255).toFixed(3) / 1;
+        this._g = (parseInt('0x' + matches[0][2], 16) / 255).toFixed(3) / 1;
+        this._b = (parseInt('0x' + matches[0][3], 16) / 255).toFixed(3) / 1;
+        if (matches[0][4] !== undefined) {
+            this._a = (parseInt('0x' + matches[0][4], 16) / 255).toFixed(3) / 1;
         }
     }
 
     _getValuesFromName(input) {
-        try {
-            let name = input.match(this.regexColor)[1];
-            // Vérifier que c'est bien une couleur nommée
-            let idx = colorNames.findIndex(e => {
-                return (e === name);
-            });
-            if (idx !== -1) {
-                this._r = (r[idx] / 255).toFixed(4) / 1;
-                this._g = (g[idx] / 255).toFixed(4) / 1;
-                this._b = (b[idx] / 255).toFixed(4) / 1;
-            } else {
-                let err = new Error(`"${name}" n'est pas le nom d'une couleur reconnue.`);
-                throw err;
-            }
-        } catch (err) {
-            console.error(err);
-            return;
+        let name = input.match(this.regexColor)[1];
+        // Vérifier que c'est bien une couleur nommée
+        let idx = namedColors.findIndex(e => {
+            return (e === name);
+        });
+        if (idx !== -1) {
+            this._r = (namedColors_r[idx] / 255).toFixed(4) / 1;
+            this._g = (namedColors_g[idx] / 255).toFixed(4) / 1;
+            this._b = (namedColors_b[idx] / 255).toFixed(4) / 1;
+        } else {
+            let err = new Error(`"${name}" n'est pas le nom d'une couleur reconnue.`);
+            throw err;
         }
     }
 
     RGB() {
-        let sep = (this.settings.separators.values) ? ', ' : ' ';
-        let sepAlpha = (this.settings.separators.transparency) ? ', ' : ' / ';
+        let sep = (this.settings.separator) ? ', ' : ' ';
+        let sepAlpha = (sep == ', ') ? ', ' : ' / ';
 
         let output = (this._a < 1 || this.settings.forceTransparency) ? 'rgba(' : 'rgb(';
         if (this.settings.RGBPercentages) {
@@ -287,12 +265,12 @@ class MyColor {
     }
 
     HSL() {
-        let sep = (this.settings.separators.values) ? ', ' : ' ';
-        let sepAlpha = (this.settings.separators.transparency) ? ', ' : ' / ';
+        let sep = (this.settings.separator) ? ', ' : ' ';
+        let sepAlpha = (sep == ', ') ? ', ' : ' / ';
         let deg = (this.settings.HSLDegrees) ? 'deg' : '';
 
         let output = (this._a < 1 || this.settings.forceTransparency) ? 'hsla(' : 'hsl(';
-        output += this._h + deg + sep + Math.round(this._s * 100) + '%' + sep + Math.round(this._l * 100) + '%';
+        output += this._h + deg + sep + ((this._s * 100).toFixed(1) / 1) + '%' + sep + ((this._l * 100).toFixed(1) / 1) + '%';
         if (this._a < 1 || this.settings.forceTransparency) {
             output += sepAlpha + this._a;
         }
@@ -328,9 +306,7 @@ class MyColor {
             let grandPa = el.parentElement.parentElement;
             let choices = grandPa.querySelectorAll('.choice');
             if (what === 'check-val') {
-                this.settings.separators.values = el.checked;
-            } else {
-                this.settings.separators.transparency = el.checked;
+                this.settings.separator = el.checked;
             }
             if (el.checked) {
                 choices[0].classList.remove('disabled');
@@ -359,8 +335,7 @@ class MyColor {
             this.settings = JSON.parse(localStorage.getItem("settings"));
             // Màj des inputs
             const el = document.querySelector('#settings');
-            el.querySelector('#check-val').checked = this.settings.separators.values;
-            el.querySelector('#check-trans').checked = this.settings.separators.transparency;
+            el.querySelector('#check-val').checked = this.settings.separator;
             el.querySelector('#force-trans').checked = this.settings.forceTransparency;
             el.querySelector('#rgb-perc').checked = this.settings.RGBPercentages;
             el.querySelector('#hsl-deg').checked = this.settings.HSLDegrees;
@@ -368,5 +343,16 @@ class MyColor {
         } else {
             return false;
         }
+    }
+
+    _displayError(message) {
+        let p = document.createElement('p');
+        p.textContent = message;
+        this.message.appendChild(p);
+    }
+
+    _clearErrors() {
+        let garbage = this.message.querySelectorAll(' * ');
+        garbage.forEach(el => el.remove());
     }
 }

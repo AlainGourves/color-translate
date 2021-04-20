@@ -47,6 +47,7 @@ main {
   padding: 2rem;
   background-color: #fff;
   border-radius: .5rem;
+  box-shadow: 0 0 1rem rgba(0,0,0,.25);
 }
 
 label,
@@ -54,6 +55,47 @@ button {
   cursor: pointer;
 }
 
+.checkbox {
+  // masque le checkbox
+  position: absolute;
+  left: -100vw;
+}
+
+#leMessage{
+  --bdr: 2px;
+  --h: .6em;
+  --clr-bdr: red;
+  --bgc: #fff;
+  width: max(40ch, 50%);
+  padding: 1em;
+  margin: auto;
+  position: relative;
+  border: var(--bdr) solid var(--clr-bdr);
+  border-radius: .5em;
+  background-color: var(--bgc);
+
+  &::before,
+  &::after{
+    position: absolute;
+    content: '';
+    @include size(0);
+    left: 2em;
+    border-style: solid;
+    border-width: 0 var(--h) var(--h) var(--h);
+  }
+  
+  &::before{
+    top: calc(var(--h) * -1);
+    border-color: transparent transparent var(--clr-bdr) transparent;
+  }
+  
+  &::after{
+    top: calc(var(--h) * -1 + var(--bdr) * 1.414);
+    border-color: transparent transparent var(--bgc) transparent;
+  }
+}
+
+/// ------------------------------------------------- Colors inputs
 .col {
   display: grid;
   grid-template-columns: 1fr 12ch;
@@ -114,22 +156,13 @@ input[type="text"] {
   }
 }
 
-/// Réglages
-
-// 1) Knobs
-
+/// ---------------------------------------------------------- Settings
+// 1) Knobs ----------------------------
 .knob_wrap {
   display: grid;
   grid-template-columns: #{$rayon * 2} 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 1em;
-}
-
-
-.checkbox {
-  // masque le checkbox
-  position: absolute;
-  left: -100vw;
 }
 
 .knob {
@@ -203,7 +236,7 @@ input[type="text"] {
   }
 }
 
-// 2) Toggle switches
+// 2) Toggle switches ----------------------------
 .toggle {
   label {
     --w: 4.2rem;

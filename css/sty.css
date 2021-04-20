@@ -35,11 +35,48 @@ main {
   padding: 2rem;
   background-color: #fff;
   border-radius: 0.5rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
 }
 
 label,
 button {
   cursor: pointer;
+}
+
+.checkbox {
+  position: absolute;
+  left: -100vw;
+}
+
+#leMessage {
+  --bdr: 2px;
+  --h: .6em;
+  --clr-bdr: red;
+  --bgc: #fff;
+  width: max(40ch, 50%);
+  padding: 1em;
+  margin: auto;
+  position: relative;
+  border: var(--bdr) solid var(--clr-bdr);
+  border-radius: 0.5em;
+  background-color: var(--bgc);
+}
+#leMessage::before, #leMessage::after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 2em;
+  border-style: solid;
+  border-width: 0 var(--h) var(--h) var(--h);
+}
+#leMessage::before {
+  top: calc(var(--h) * -1);
+  border-color: transparent transparent var(--clr-bdr) transparent;
+}
+#leMessage::after {
+  top: calc(var(--h) * -1 + var(--bdr) * 1.414);
+  border-color: transparent transparent var(--bgc) transparent;
 }
 
 .col {
@@ -101,11 +138,6 @@ input[type=text]:focus {
   grid-template-columns: 2.4rem 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 1em;
-}
-
-.checkbox {
-  position: absolute;
-  left: -100vw;
 }
 
 .knob {

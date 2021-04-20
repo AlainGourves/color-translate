@@ -12,7 +12,7 @@
     <main>
         <section id="leInput" class="col">
             <label for="clr-input">Entrée !</label>
-            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color...">
+            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color..." autocomplete="off">
             <datalist id="colors-list"></datalist>
         </section>
         <section id="leMessage"></section>
@@ -43,17 +43,6 @@
                 </div>
                 <div class="choice">Comma</div>
                 <div class="choice disabled">Space</div>
-            </div>
-        </div>
-        <div class="ligne">
-            <div>Transparency</div>
-            <div id="separator-trans" class="knob_wrap">
-                <div class="knob">
-                    <input type="checkbox" data-id="check-trans" id="check-trans" class="checkbox" checked>
-                    <label for="check-trans"></label>
-                </div>
-                <div class="choice">Comma</div>
-                <div class="choice disabled">Slash</div>
             </div>
         </div>
         <div class="ligne">
