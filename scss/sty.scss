@@ -61,7 +61,7 @@ button {
   left: -100vw;
 }
 
-#leMessage{
+#errorMessage{
   --bdr: 2px;
   --h: .6em;
   --clr-bdr: red;
@@ -92,6 +92,16 @@ button {
   &::after{
     top: calc(var(--h) * -1 + var(--bdr) * 1.414);
     border-color: transparent transparent var(--bgc) transparent;
+  }
+
+  & span{
+    color: red;
+    font-weight: 900;
+
+    &::before,
+    &::after{
+      content: '"';
+    }
   }
 }
 

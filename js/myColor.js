@@ -11,6 +11,9 @@ class MyColor {
         this._a = 1; // transparence default
         this._type; // 'rgb', 'hsl', 'hex'
 
+        this.isError = false;
+        this.errorMessage;
+
         this.regexHex = /#([0-9a-f]{3,8})/i;
         this.regexRgb = /rgba?\((.*?)\)/i;
         this.regexHsl = /hsla?\((.*?)\)/i;
@@ -19,7 +22,6 @@ class MyColor {
         this.hexField = document.getElementById('clr-hex');
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
-        this.message = document.getElementById('leMessage');
 
         if (!this._loadSettings()) {
             this.settings = {
@@ -33,6 +35,39 @@ class MyColor {
         this.hexField.value = '';
         this.rgbField.value = '';
         this.hslField.value = '';
+
+        // gestion langues pour les messages d'erreur
+        this.lang = this._getLanguage();
+        this.messages = {
+            'badType': {
+                'fr': "_ ne correspond à aucun type de couleur accepté.",
+                'en': "_ doesn't match any accepted color type."
+            },
+            'badValue': {
+                'fr': "Problème avec la valeur de _.",
+                'en': "Problem with the value of _."
+            },
+            'noMatch': {
+                'fr': "_ ne correspond à aucun pattern.",
+                'en': "_ doesn't match any pattern."
+            },
+            'badHue': {
+                'fr': "La valeur de Hue doit être comprise entre 0 et 360 (_).",
+                'en': "The Hue value must be between 0 and 360."
+            },
+            'badSatLig': {
+                'fr': "_ doit être un pourcentage.",
+                'en': "_ must be a percentage."
+            },
+            'badInput': {
+                'fr': "La chaîne _ n'est pas correcte.",
+                'en': "The string _ is not correct."
+            },
+            'badColor': {
+                'fr': "_ n'est pas un nom de couleur reconnu.",
+                'en': "_ is not a known named color."
+            }
+        }
     }
 
     updateColor(input) {
@@ -47,7 +82,8 @@ class MyColor {
                 } else if (this.regexColor.test(input)) {
                     this._type = 'namedColor'
                 } else {
-                    let err = new Error(`"${input}" ne correspond à aucun type accepté.`);
+                    let err = new Error(input);
+                    err.name = 'badType';
                     throw err;
                 }
 
@@ -79,14 +115,15 @@ class MyColor {
 
                 lastCheck.forEach((v, i) => {
                     if (isNaN(v)) {
-                        let err = new Error(`Problème avec la valeur de "${tags[i]}".`);
+                        let err = new Error(tags[i]);
+                        err.name = 'badValue';
                         throw err;
                     }
                 });
 
                 this.update();
             } catch (err) {
-                this._displayError(err.message);
+                this._displayError(err.name, err.message);
                 return;
             }
         }
@@ -136,7 +173,8 @@ class MyColor {
         if (result.length > 0) {
             return result[0].slice(1); // l'item 0 contient la chaîne qui matche tout le regex, on en n'a pas besoin
         } else {
-            let err = new Error(`La chaîne "${input}" ne correspond à aucun pattern.`);
+            let err = new Error(input);
+            err.name = 'noMatch';
             throw err;
         }
     }
@@ -146,7 +184,8 @@ class MyColor {
 
         // H est dans l'intervalle 0-360 (et pas un %)
         if (vals[0].indexOf('%') != -1 || vals[0] < 0 || vals[0] > 360) {
-            let err = new Error(`Hue doit être compris entre 0 et 360 : ${vals[0]}.`);
+            let err = new Error(vals[0]);
+            err.name = 'badHue';
             throw err;
         } else if (vals[0].toLowerCase().indexOf('deg') != -1) {
             // Supprime le 'deg' s'il est présent
@@ -156,7 +195,8 @@ class MyColor {
         for (let i = 1; i < 3; i++) {
             // S et L doivent être des %
             if (vals[i].indexOf('%') == -1) {
-                let err = new Error(`"${vals[i]}" doit être un pourcentage.`);
+                let err = new Error(vals[i]);
+                err.name = 'badSatLig';
                 throw err;
             } else {
                 // on ne stocke pas le '%'
@@ -216,7 +256,8 @@ class MyColor {
         }
         if ((hex.length !== 6) && (hex.length !== 8)) {
             // le compte n'est pas bon : erreur TODO
-            let err = new Error(`La chaîne "${input}" n'est pas correcte.`);
+            let err = new Error(input);
+            err.name = 'badInput';
             throw err;
         }
         // Sépare les valeurs R,G,B,[A] et les renvoit sous forme de array
@@ -242,7 +283,8 @@ class MyColor {
             this._g = (namedColors_g[idx] / 255).toFixed(4) / 1;
             this._b = (namedColors_b[idx] / 255).toFixed(4) / 1;
         } else {
-            let err = new Error(`"${name}" n'est pas le nom d'une couleur reconnue.`);
+            let err = new Error(name);
+            err.name = 'badColor';
             throw err;
         }
     }
@@ -345,14 +387,33 @@ class MyColor {
         }
     }
 
-    _displayError(message) {
-        let p = document.createElement('p');
-        p.textContent = message;
-        this.message.appendChild(p);
+    _getLanguage() {
+        const l = navigator.language;
+        if ((/^fr/i).test(l)) {
+            return 'fr'
+        }else{
+            return 'en'
+        }
     }
 
-    _clearErrors() {
-        let garbage = this.message.querySelectorAll(' * ');
-        garbage.forEach(el => el.remove());
+    _displayError(errName, errValue) {
+        let errorMessage = document.createElement('section');
+        errorMessage.setAttribute('id', 'errorMessage');
+        let p = document.createElement('p');
+        let message = this.messages[errName][this.lang];
+        let insert = `<span>${errValue}</span>`;
+        message = message.replace('_', insert);
+        p.innerHTML = message;
+        errorMessage.appendChild(p);
+        this.isError = true;
+        // insère en tant que 2e enfant de <main>
+        const sections = document.querySelectorAll('main > section');
+        this.errorMessage = document.querySelector('main').insertBefore(errorMessage, sections[1]);
+    }
+
+    clearError() {
+        if (this.isError){
+            this.errorMessage.remove();
+        }
     }
 }

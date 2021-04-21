@@ -48,7 +48,7 @@ button {
   left: -100vw;
 }
 
-#leMessage {
+#errorMessage {
   --bdr: 2px;
   --h: .6em;
   --clr-bdr: red;
@@ -61,7 +61,7 @@ button {
   border-radius: 0.5em;
   background-color: var(--bgc);
 }
-#leMessage::before, #leMessage::after {
+#errorMessage::before, #errorMessage::after {
   position: absolute;
   content: "";
   width: 0;
@@ -70,13 +70,20 @@ button {
   border-style: solid;
   border-width: 0 var(--h) var(--h) var(--h);
 }
-#leMessage::before {
+#errorMessage::before {
   top: calc(var(--h) * -1);
   border-color: transparent transparent var(--clr-bdr) transparent;
 }
-#leMessage::after {
+#errorMessage::after {
   top: calc(var(--h) * -1 + var(--bdr) * 1.414);
   border-color: transparent transparent var(--bgc) transparent;
+}
+#errorMessage span {
+  color: red;
+  font-weight: 900;
+}
+#errorMessage span::before, #errorMessage span::after {
+  content: '"';
 }
 
 .col {

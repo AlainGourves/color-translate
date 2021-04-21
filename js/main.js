@@ -14,6 +14,7 @@ window.addEventListener("load", e => {
   });
 
   newColor.addEventListener('input', e => {
+    if (clr.isError) clr.clearError();
     let q = e.target.value;
     let regex = /^[a-z]+$/i;
     if (q.length > 0 && regex.test(q)) {
