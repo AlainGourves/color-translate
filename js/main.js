@@ -30,8 +30,6 @@ window.addEventListener("load", e => {
         }
         colorsList.innerHTML = optionList;
       } else {
-        // TODO mettre ça aussi sur 'onBlur' ?
-        // => vider la liste quand elle ne sert plus
         colorsList.innerHTML = '';
       }
     }

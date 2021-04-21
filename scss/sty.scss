@@ -62,7 +62,7 @@ button {
 }
 
 #errorMessage{
-  --bdr: 2px;
+  --bdr: 1px;
   --h: .6em;
   --clr-bdr: red;
   --bgc: #fff;
@@ -73,6 +73,13 @@ button {
   border: var(--bdr) solid var(--clr-bdr);
   border-radius: .5em;
   background-color: var(--bgc);
+  filter: drop-shadow(0 0 4px var(--clr-bdr));
+  opacity: 0;
+  transition: opacity .5s ease-in-out;
+
+  &.visible{
+    opacity: 1;
+  }
 
   &::before,
   &::after{
@@ -95,13 +102,11 @@ button {
   }
 
   & span{
-    color: red;
-    font-weight: 900;
-
-    &::before,
-    &::after{
-      content: '"';
-    }
+    padding: .125em .25em;
+    font-family: monospace;
+    color: #fff;
+    background-color: var(--clr-1);
+    border-radius: .25em;
   }
 }
 

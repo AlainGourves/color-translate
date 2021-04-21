@@ -124,9 +124,25 @@ class MyColor {
                 this.update();
             } catch (err) {
                 this._displayError(err.name, err.message);
+                this._reset();
                 return;
             }
         }
+    }
+
+    _reset() {
+        this._r = '';
+        this._g = '';
+        this._b = '';
+        this._h = '';
+        this._s = '';
+        this._l = '';
+        this._a = 1;
+        this._type = ''; 
+        this.hexField.value = ''
+        this.rgbField.value = '';
+        this.hslField.value = '';
+        document.body.style.backgroundColor = 'var(--fondPage)';
     }
 
     update() {
@@ -164,7 +180,7 @@ class MyColor {
         this._h = Math.round(this._h);
         if (this._h < 0) this._h += 360;
         this._l = (xmax + xmin) / 2;
-        this._s = (xmax == 0) ? 0 : chroma / (1 - Math.abs(2 * xmax - chroma - 1));
+        this._s = (xmax == 0 || this._l == 1) ? 0 : chroma / (1 - Math.abs(2 * xmax - chroma - 1));
     }
 
     _getValues(input) {
@@ -409,11 +425,15 @@ class MyColor {
         // insère en tant que 2e enfant de <main>
         const sections = document.querySelectorAll('main > section');
         this.errorMessage = document.querySelector('main').insertBefore(errorMessage, sections[1]);
+        this.errorMessage.classList.add('visible');
     }
 
     clearError() {
         if (this.isError){
-            this.errorMessage.remove();
+            this.errorMessage.classList.remove('visible');
+            this.errorMessage.addEventListener('transitionend', e => {
+                e.target.remove();
+            })
         }
     }
 }
