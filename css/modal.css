@@ -1,0 +1,80 @@
+:root {
+  --cubic: cubic-bezier(0.5, 0.5, 1, 2);
+  --modal-close-btn: rgba(63, 63, 73);
+  --modal-close-btn-hover: rgba(0, 0, 0);
+}
+
+body.modal-on {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.modal {
+  position: fixed;
+  display: none;
+  opacity: 0;
+  z-index: 999;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.75);
+}
+.modal-right {
+  right: -100%;
+  transition: right 0.5s ease-in-out, opacity 0.25s ease-in-out 0.25s;
+}
+.modal-left {
+  left: -100%;
+  transition: left 0.5s ease-in-out, opacity 0.25s ease-in-out 0.25s;
+}
+.modal-top {
+  top: -100%;
+  transition: top 0.5s ease-in-out, opacity 0.25s ease-in-out 0.25s;
+}
+.modal-bottom {
+  bottom: -100%;
+  transition: bottom 0.5s ease-in-out, opacity 0.25s ease-in-out 0.25s;
+}
+.modal-open {
+  opacity: 1;
+}
+.modal-open.modal-right {
+  right: 0;
+}
+.modal-open.modal-left {
+  left: 0;
+}
+.modal-open.modal-top {
+  top: 0;
+}
+.modal-open.modal-bottom {
+  bottom: 0;
+}
+
+#overlay {
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 200;
+}
+
+.modal-close {
+  --svg-color: var(--modal-close-btn);
+  position: absolute;
+  display: block;
+  width: 2em;
+  height: 2em;
+  top: 1em;
+  right: 1em;
+  cursor: pointer;
+  transition: transform 0.25s var(--cubic);
+  background: var(--svg-color);
+  -webkit-mask-image: url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Cpath fill="black" d="M15.898 4.045a.698.698 0 00-.986 0l-4.71 4.711-4.709-4.711a.698.698 0 00-.986.986l4.709 4.711-4.71 4.711a.698.698 0 00.985.986l4.711-4.711 4.71 4.711a.695.695 0 00.494.203.694.694 0 00.492-1.189l-4.711-4.711 4.711-4.711a.694.694 0 000-.986z"/%3E%3C/svg%3E');
+  mask-image: url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Cpath fill="black" d="M15.898 4.045a.698.698 0 00-.986 0l-4.71 4.711-4.709-4.711a.698.698 0 00-.986.986l4.709 4.711-4.71 4.711a.698.698 0 00.985.986l4.711-4.711 4.71 4.711a.695.695 0 00.494.203.694.694 0 00.492-1.189l-4.711-4.711 4.711-4.711a.694.694 0 000-.986z"/%3E%3C/svg%3E');
+}
+.modal-close:hover {
+  --svg-color: var(--modal-close-btn-hover);
+  transform: rotate(90deg);
+}
+/*# sourceMappingURL=modal.css.map */

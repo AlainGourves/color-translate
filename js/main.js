@@ -2,9 +2,13 @@ const query = document.querySelector('#leInput');
 const colorsList = document.querySelector('#colors-list')
 const newColor = document.querySelector('#clr-input');
 const settings = document.querySelector('#settings');
+// modal dialog for #settings
+const modal = new AgModal('#settings');
+const cog = document.querySelector('#cog');
 
 let clr;
 window.addEventListener("load", e => {
+
   clr = new MyColor();
   newColor.addEventListener('change', e => {
     clr.updateColor(e.target.value);
@@ -34,6 +38,8 @@ window.addEventListener("load", e => {
       }
     }
   });
+
+  cog.addEventListener('click', _ => modal.open());
 
   const copyBtns = document.querySelectorAll('.copy');
   copyBtns.forEach(b => {

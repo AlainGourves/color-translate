@@ -168,8 +168,12 @@ input[type=text]:focus {
 
 #settings {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5em;
+  grid-template: 1fr 1fr/1fr 1fr;
+  grid-auto-flow: column;
+  row-gap: 1em;
+  column-gap: 2em;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #d1cfc7;
   padding: 1em;
 }
@@ -178,6 +182,10 @@ input[type=text]:focus {
   grid-template-columns: 1fr 7rem;
   align-items: center;
   gap: 1em;
+}
+#settings .ligne span {
+  font-size: 0.875em;
+  font-weight: 100;
 }
 
 .knob_wrap {
@@ -197,7 +205,7 @@ input[type=text]:focus {
   width: 2.4rem;
   height: 2.4rem;
   position: relative;
-  background-color: var(--clr-2);
+  background-color: var(--clr-1);
   border-radius: 50%;
 }
 .knob label::before, .knob label::after {
@@ -224,7 +232,7 @@ input[type=text]:focus {
   transform-origin: -0.8485281374rem 50%;
   border-style: solid;
   border-width: 0.8485281374rem 0 0.8485281374rem 0.8485281374rem;
-  border-color: transparent transparent transparent var(--clr-2);
+  border-color: transparent transparent transparent var(--clr-1);
   transform: translateY(-50%) rotate(var(--angleRotation));
   z-index: -1;
 }
@@ -244,9 +252,6 @@ input[type=text]:focus {
   font-family: sans-serif;
   font-size: 1.2rem;
   color: var(--clr-1);
-}
-.choice ~ .choice {
-  color: var(--clr-2);
 }
 .choice.disabled {
   color: #a7a7a7;
@@ -296,5 +301,22 @@ input[type=text]:focus {
 }
 .toggle input:checked + label:focus::after, .toggle input:checked + label:hover::after {
   left: calc(var(--w) - ((var(--h)/2 + var(--m))));
+}
+
+#cog {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: #cacaca;
+  background-image: url('data:image/svg+xml;utf8,<svg enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m0 0h24v24h-24z" fill="none"/><path d="m19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.91 3.32c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61zm-7.14 2.66c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>');
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+}
+#cog:hover {
+  background-color: var(--clr-1);
 }
 /*# sourceMappingURL=sty.css.map */
