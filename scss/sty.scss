@@ -28,10 +28,13 @@ $clr-2: hsl(120, 61%, 50%);
   --angleRotation: #{$angleRotation};
 
   --bsh: 0px 0px 2px rgba(0, 0, 0, .5);
+
+  --transition-error: .25s ease-in-out;
 }
 
 html {
   font-size: 16px;
+  font-family: sans-serif;
 }
 
 body {
@@ -48,6 +51,18 @@ main {
   background-color: #fff;
   border-radius: .5rem;
   box-shadow: 0 0 1rem rgba(0,0,0,.25);
+
+  &.error{
+    // animation transition de l'affichage du message d'erreur
+    & #leHex{
+      margin-top: 4rem;
+    }
+
+    & #errorMessage{
+      opacity: 1;
+      top: -3rem;
+    }
+  }
 }
 
 label,
@@ -61,25 +76,36 @@ button {
   left: -100vw;
 }
 
+#errorMessage,
+#leHex{
+  grid-area: 2 / 1;
+}
+
+#leHex{
+  margin-top: 0;
+  z-index: 10;
+  transition: margin-top var(--transition-error);
+}
+
+
 #errorMessage{
-  --bdr: 1px;
+  --bdr: 2px;
   --h: .6em;
   --clr-bdr: red;
   --bgc: #fff;
   width: max(40ch, 50%);
+  position: relative;
+  top: 0;
   padding: 1em;
   margin: auto;
-  position: relative;
   border: var(--bdr) solid var(--clr-bdr);
   border-radius: .5em;
   background-color: var(--bgc);
   filter: drop-shadow(0 0 4px var(--clr-bdr));
   opacity: 0;
-  transition: opacity .5s ease-in-out;
-
-  &.visible{
-    opacity: 1;
-  }
+  z-index: 1;
+  transition: opacity var(--transition-error),
+              top var(--transition-error);
 
   &::before,
   &::after{
@@ -124,15 +150,9 @@ button {
     text-transform: uppercase;
   }
 
-  input[type="text"] {
-    grid-area: 2 / 1 / 3 / 2;
-    border-right-width: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
   button {
     grid-area: 2 / 2 / 3 / 3;
+    -webkit-appearance: none;
     appearance: none;
     border: 0;
     border-top-right-radius: var(--rad);
@@ -142,11 +162,11 @@ button {
     font-size: 2rem;
     color: #fff;
     transition: background-color .125s ease-in-out;
-
+    
     &:hover{
       background-color: color.scale($clr-1, $lightness: -40%);
     }
-
+    
     &.copied{
       background-color: var(--clr-2);
     }
@@ -154,24 +174,44 @@ button {
 }
 
 input[type="text"] {
+  grid-area: 2 / 1 / 3 / 2;
+  -webkit-appearance: none;
   appearance: none;
   padding: .25rem .5rem;
-  border-style: solid;
-  border-width: 1px;
-  border-color: var(--clr-1);
-  border-radius: var(--rad);
   font-family: "JetBrains Mono", monospace;
   font-size: 2rem;
   line-height: 1;
   color: var(--clr-1);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--clr-1);
+  border-radius: var(--rad);
+  border-right-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 
   &:focus {
+    font-size: 2rem; // empêche le zoom sur l'input quand il a le focus sur IOS
     outline: 0;
     box-shadow: 0 0 8px rebeccapurple;
   }
 }
 
 /// ---------------------------------------------------------- Settings
+#settings{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  background-color: hsl(45, 10%, 80%);
+  padding: 1em;
+
+  & .ligne{
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+  }
+}
+
 // 1) Knobs ----------------------------
 .knob_wrap {
   display: grid;

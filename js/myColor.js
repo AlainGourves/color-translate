@@ -19,6 +19,7 @@ class MyColor {
         this.regexHsl = /hsla?\((.*?)\)/i;
         this.regexColor = /^([a-z]{3,})$/i;
 
+        this.container = document.querySelector('main');
         this.hexField = document.getElementById('clr-hex');
         this.rgbField = document.getElementById('clr-rgb');
         this.hslField = document.getElementById('clr-hsl');
@@ -60,8 +61,8 @@ class MyColor {
                 'en': "_ must be a percentage."
             },
             'badInput': {
-                'fr': "La chaîne _ n'est pas correcte.",
-                'en': "The string _ is not correct."
+                'fr': "La longueur de la chaîne _ n'est pas correcte.",
+                'en': "The length of the string _ is not correct."
             },
             'badColor': {
                 'fr': "_ n'est pas un nom de couleur reconnu.",
@@ -127,16 +128,18 @@ class MyColor {
                 this._reset();
                 return;
             }
+        }else{
+            this._reset();
         }
     }
 
     _reset() {
-        this._r = '';
-        this._g = '';
-        this._b = '';
-        this._h = '';
-        this._s = '';
-        this._l = '';
+        this._r = undefined;
+        this._g = undefined;
+        this._b = undefined;
+        this._h = undefined;
+        this._s = undefined;
+        this._l = undefined;
         this._a = 1;
         this._type = ''; 
         this.hexField.value = ''
@@ -226,10 +229,14 @@ class MyColor {
                 vals[3] = (vals[3].substr(0, vals[3].length - 1) / 100).toFixed(3); // valeur entre 0 et 1, avec 3 décimales;
             }
         }
-
         this._h = vals[0] / 1; // /1 permet de supprimer les 0 inutiles en décimale
         this._s = vals[1] / 1;
         this._l = vals[2] / 1;
+        if (this._l == 1 || this.l == 0) {
+            // Blanc et Noir : si L = 100% (blanc) ou 0% (noir), H & S =0
+            this._h = 0;
+            this._s = 0;
+        }
         if (vals[3] != undefined) this._a = vals[3] / 1
     }
 
@@ -271,7 +278,6 @@ class MyColor {
             hex = hex.replace(/(.)(.)(.)(.)/, '$1$1$2$2$3$3$4$4');
         }
         if ((hex.length !== 6) && (hex.length !== 8)) {
-            // le compte n'est pas bon : erreur TODO
             let err = new Error(input);
             err.name = 'badInput';
             throw err;
@@ -351,7 +357,7 @@ class MyColor {
         const matches = [...output.matchAll(regex)];
         if (matches.length > 0) {
             output = matches[0][1] + matches[0][2] + matches[0][3];
-            if (this._a < 1) output += matches[0][4];
+            if (this._a < 1 || this.settings.forceTransparency) output += matches[0][4];
         }
         return '#' + output;
     }
@@ -423,17 +429,17 @@ class MyColor {
         errorMessage.appendChild(p);
         this.isError = true;
         // insère en tant que 2e enfant de <main>
-        const sections = document.querySelectorAll('main > section');
-        this.errorMessage = document.querySelector('main').insertBefore(errorMessage, sections[1]);
-        this.errorMessage.classList.add('visible');
+        const sections = this.container.querySelectorAll('section');
+        this.errorMessage = this.container.insertBefore(errorMessage, sections[1]);
+        this.container.classList.add('error');
     }
-
+    
     clearError() {
         if (this.isError){
-            this.errorMessage.classList.remove('visible');
             this.errorMessage.addEventListener('transitionend', e => {
                 e.target.remove();
-            })
+            }, {once: true})
         }
+        this.container.classList.remove('error');
     }
 }

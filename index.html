@@ -12,7 +12,7 @@
     <main>
         <section id="leInput" class="col">
             <label for="clr-input">Entrée !</label>
-            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color..." autocomplete="off">
+            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color..." autocomplete="off" autocapitalize="off">
             <datalist id="colors-list"></datalist>
         </section>
         <section id="leHex" class="col">
@@ -32,9 +32,8 @@
         </section>
     </main>
     <div id="settings">
-        <div>Separators</div>
         <div class="ligne">
-            <div>Values</div>
+            <div>Separator</div>
             <div id="separator-values" class="knob_wrap">
                 <div class="knob">
                     <input type="checkbox" data-id="check-val" id="check-val" class="checkbox" checked>
