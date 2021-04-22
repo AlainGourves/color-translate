@@ -207,8 +207,9 @@ input[type="text"] {
 
   & .ligne{
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 7rem;
     align-items: center;
+    gap: 1em;
   }
 }
 

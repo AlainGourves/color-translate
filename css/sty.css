@@ -175,8 +175,9 @@ input[type=text]:focus {
 }
 #settings .ligne {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 1fr 7rem;
   align-items: center;
+  gap: 1em;
 }
 
 .knob_wrap {
@@ -296,3 +297,4 @@ input[type=text]:focus {
 .toggle input:checked + label:focus::after, .toggle input:checked + label:hover::after {
   left: calc(var(--w) - ((var(--h)/2 + var(--m))));
 }
+/*# sourceMappingURL=sty.css.map */
