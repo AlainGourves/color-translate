@@ -145,13 +145,16 @@ class MyColor {
         this.hexField.value = ''
         this.rgbField.value = '';
         this.hslField.value = '';
+        this.container.classList.add('disabled');
         document.body.style.backgroundColor = 'var(--fondPage)';
     }
-
+    
     update() {
+        this._getName();
         this.hexField.value = this.HEX();
         this.rgbField.value = this.RGB();
         this.hslField.value = this.HSL();
+        this.container.classList.remove('disabled');
         document.body.style.backgroundColor = this.RGB();
     }
 
@@ -441,5 +444,39 @@ class MyColor {
             }, {once: true})
         }
         this.container.classList.remove('error');
+    }
+
+    _getName() {
+        let r = Math.round(this._r * 255);
+        let g = Math.round(this._g * 255);
+        let b = Math.round(this._b * 255);
+        // liste les indexes des couleurs nommées dont la valeur de R correspond
+        let sameR = namedColors_r.reduce((arr, x, idx) => {
+            if (x === r) arr.push(idx);
+            return arr;
+        }, []/*Accumulator to store the found indexes.*/);
+        if (sameR.length > 0){
+            // cherche les couleurs où G correspond aussi
+            let sameG = [];
+            sameR.forEach(x => {
+                if (namedColors_g[x] === g) sameG.push(x)
+            });
+            if (sameG.length > 0){
+                // Cherche si une valeur correspond aussi à B
+                sameG.forEach(x => {
+                    if (namedColors_b[x] === b) {
+                        // renvoit la première correspondance
+                        //(ne tient pas compte des synomnymes : 'gray'/'grey')
+                        console.log("yé! ", namedColors[x])
+                        return namedColors[x];
+                    }
+                    return false;
+                })
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 }

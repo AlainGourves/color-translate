@@ -6,6 +6,26 @@ const settings = document.querySelector('#settings');
 const modal = new AgModal('#settings');
 const cog = document.querySelector('#cog');
 
+
+
+function handleCopyButton(btn) {
+  btn.addEventListener('click', e => {
+    const duration = window.getComputedStyle(e.target).transitionDuration;
+    const parent = e.target.parentElement;
+    const field = parent.querySelector('input[type=text]');
+    if (field.value.length > 0) {
+      e.target.style.transitionDuration = '1s';
+      e.target.classList.add('copied');
+      e.target.addEventListener('transitionend', _ => {
+        e.target.style.transitionDuration = duration;
+        e.target.classList.remove('copied');
+      }, {
+        once: true
+      });
+    }
+  });
+}
+
 let clr;
 window.addEventListener("load", e => {
 
@@ -41,22 +61,5 @@ window.addEventListener("load", e => {
 
   cog.addEventListener('click', _ => modal.open());
 
-  const copyBtns = document.querySelectorAll('.copy');
-  copyBtns.forEach(b => {
-    b.addEventListener('click', e => {
-      const duration = window.getComputedStyle(e.target).transitionDuration;
-      const parent = e.target.parentElement;
-      const field = parent.querySelector('input[type=text]');
-      if (field.value.length > 0) {
-        e.target.style.transitionDuration = '1s';
-        e.target.classList.add('copied');
-        e.target.addEventListener('transitionend', _ => {
-          e.target.style.transitionDuration = duration;
-          e.target.classList.remove('copied');
-        }, {
-          once: true
-        });
-      }
-    });
-  });
+  document.querySelectorAll('.copy').forEach(b => handleCopyButton(b));
 });

@@ -33,18 +33,31 @@ $clr-2: hsl(120, 61%, 50%);
 }
 
 html {
-  font-size: 16px;
   font-family: sans-serif;
+  @include mq('max', $phone){
+    font-size: 12px;
+  }
+  @include mq($phone, $tablet){
+    font-size: 14px;
+  }
+  @include mq($tablet, $desktop-large){
+    font-size: 16px;
+  }
+  @include mq('min', $desktop-large){
+    font-size: 18px;
+  }
 }
 
 body {
   background-color: var(--fondPage);
   min-height: 100vh;
+  text-rendering: optimizeLegibility;
   @include grid-center;
 }
 
 main {
-  width: 60vw;
+  width: Min(calc(100vw - 2em), 800px);
+  min-width: 345px;
   display: grid;
   row-gap: 1.6em;
   padding: 2rem;
@@ -63,12 +76,27 @@ main {
       top: -3rem;
     }
   }
+
+  &.disabled .col{
+    & label{
+      color: #a982a9;
+    }
+    
+    & input[type="text"]{
+      border-color: #a982a9;
+    }
+    & button{
+      background-color: #a982a9;
+    }
+  }
 }
 
 label,
 button {
   cursor: pointer;
 }
+
+:focus:not(:focus-visible) { outline: none }
 
 .checkbox {
   // masque le checkbox
@@ -137,9 +165,20 @@ button {
 }
 
 /// ------------------------------------------------- Colors inputs
+#leInput{
+  grid-template: auto 1fr / 1fr;
+}
+#clr-input{
+  width: 80%;
+  margin: 0 auto;
+  border-width: 2px;
+  border-top-right-radius:  var(--rad);
+  border-bottom-right-radius:  var(--rad);
+}
+
 .col {
   display: grid;
-  grid-template-columns: 1fr 12ch;
+  grid-template-columns: minmax(0, 1fr) auto;
 
   label {
     grid-area: 1 / 1 / 2 /3;
@@ -154,6 +193,7 @@ button {
     grid-area: 2 / 2 / 3 / 3;
     -webkit-appearance: none;
     appearance: none;
+    padding: 0 .8rem;
     border: 0;
     border-top-right-radius: var(--rad);
     border-bottom-right-radius: var(--rad);
@@ -170,6 +210,11 @@ button {
     &.copied{
       background-color: var(--clr-2);
     }
+
+  }
+
+  &:focus-within > :not(label){
+    box-shadow: 0 0 4px 4px green;
   }
 }
 
@@ -193,7 +238,7 @@ input[type="text"] {
   &:focus {
     font-size: 2rem; // empêche le zoom sur l'input quand il a le focus sur IOS
     outline: 0;
-    box-shadow: 0 0 8px rebeccapurple;
+    // box-shadow: 0 0 8px rebeccapurple;
   }
 }
 

@@ -10,25 +10,25 @@
 </head>
 
 <body>
-    <main>
-        <section id="leInput" class="col">
+    <main class="disabled">
+        <section id="leInput">
             <label for="clr-input">Entrée !</label>
-            <input type="text" name="clr-input" id="clr-input" list="colors-list" placeholder="A color..." autocomplete="off" autocapitalize="off">
+            <input type="text" name="clr-input" id="clr-input" list="colors-list"  autocomplete="off" autocapitalize="off">
             <datalist id="colors-list"></datalist>
         </section>
         <section id="leHex" class="col">
             <label for="clr-hex">hex</label>
-            <input type="text" name="clr-hex" id="clr-hex" readonly>
+            <input type="text" name="clr-hex" id="clr-hex" disabled readonly>
             <button class="copy">Copy</button>
         </section>
         <section id="leRgb" class="col">
             <label for="clr-rgb">rgb</label>
-            <input type="text" name="clr-rgb" id="clr-rgb" readonly>
+            <input type="text" name="clr-rgb" id="clr-rgb" disabled readonly>
             <button class="copy">Copy</button>
         </section>
         <section id="leHsl" class="col">
             <label for="clr-hsl">hsl</label>
-            <input type="text" name="clr-hsl" id="clr-hsl" readonly>
+            <input type="text" name="clr-hsl" id="clr-hsl" disabled readonly>
             <button class="copy">Copy</button>
         </section>
     </main>
