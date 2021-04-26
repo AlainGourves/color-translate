@@ -1,4 +1,31 @@
 @use "sass:math";
+@use "sass:meta";
+
+$phone: 480px;
+$tablet: 768px;
+$desktop: 1148px;
+$desktop-large: 1800px;
+
+/*
+------ Media queries
+
+Usage : @include mq('max', $tablet) {...}
+            => @media (max-width: 768px) { ... }
+    ou 
+        @include mq($phone, $tablet) {...}
+            => @media (min-width: 480px) and (max-width: 768px) { ... }
+*/
+@mixin mq($arg...) {
+    @if type_of(nth($arg, 1)) == string {
+        @media (#{nth($arg, 1)}-width: nth($arg, 2)){
+            @content;
+        }
+    } @else {
+        @media (min-width: nth($arg, 1)) and (max-width: nth($arg, 2)){
+            @content;
+        }
+    }
+}
 
 /// Width & height of a block
 /// If only one parameter is provided, it's a square !
