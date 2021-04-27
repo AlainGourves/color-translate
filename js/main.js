@@ -6,26 +6,6 @@ const settings = document.querySelector('#settings');
 const modal = new AgModal('#settings');
 const cog = document.querySelector('#cog');
 
-
-
-function handleCopyButton(btn) {
-  btn.addEventListener('click', e => {
-    const duration = window.getComputedStyle(e.target).transitionDuration;
-    const parent = e.target.parentElement;
-    const field = parent.querySelector('input[type=text]');
-    if (field.value.length > 0) {
-      e.target.style.transitionDuration = '1s';
-      e.target.classList.add('copied');
-      e.target.addEventListener('transitionend', _ => {
-        e.target.style.transitionDuration = duration;
-        e.target.classList.remove('copied');
-      }, {
-        once: true
-      });
-    }
-  });
-}
-
 let clr;
 window.addEventListener("load", e => {
 
@@ -58,8 +38,33 @@ window.addEventListener("load", e => {
       }
     }
   });
+  // auto-complétion des parenthèses
+  newColor.addEventListener('keydown', e => {
+    if (e.key === '(' || e.key === 'Backspace') {
+      let val = [...e.target.value];
+      let pos = e.target.selectionStart;
+      let changed = false;
+      switch (e.key) {
+        case '(':
+          val.splice(pos, 0, ')');
+          changed = true;
+          break;
+        case 'Backspace':
+          let delenda = val[pos - 1];
+          if (delenda === '(' && val[pos] ===')') {
+            val.splice(pos, 1);
+            changed = true;
+          }
+          break;
+      }
+      if (changed){
+        e.target.value = val.join('');
+        e.target.selectionEnd = pos;
+      }
+    }
+  });
 
   cog.addEventListener('click', _ => modal.open());
 
-  document.querySelectorAll('.copy').forEach(b => handleCopyButton(b));
+  document.querySelectorAll('.copy').forEach(b => clr.btnCopy(b));
 });

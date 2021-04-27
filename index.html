@@ -13,7 +13,7 @@
     <main class="disabled">
         <section id="leInput">
             <label for="clr-input">Entrée !</label>
-            <input type="text" name="clr-input" id="clr-input" list="colors-list"  autocomplete="off" autocapitalize="off">
+            <input type="text" name="clr-input" id="clr-input" list="colors-list"   autocapitalize="off" autocorrect="off" spellcheck="false">
             <datalist id="colors-list"></datalist>
         </section>
         <section id="leHex" class="col">
@@ -67,6 +67,18 @@
         </div>
     </div>
     <div id="cog"></div>
+    <template id="tmpl_error">
+        <section id="errorMessage">
+            <p></p>
+        </section>
+    </template>
+    <template id="tmpl_namedColor">
+        <section id="leNamedColor" class="col">
+            <label for="clr-hsl">Named color</label>
+            <input type="text" name="clr-named" id="clr-named" disabled readonly>
+            <button class="copy">Copy</button>
+        </section>
+    </template>
     <script src="./js/agmodal.js"></script>
     <script src="./js/namedColors.js"></script>
     <script src="./js/myColor.js"></script>

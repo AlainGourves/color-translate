@@ -12,6 +12,7 @@ class MyColor {
         this._type; // 'rgb', 'hsl', 'hex'
 
         this.isError = false;
+        this.isNamed = false;
         this.errorMessage;
 
         this.regexHex = /#([0-9a-f]{3,8})/i;
@@ -73,6 +74,7 @@ class MyColor {
 
     updateColor(input) {
         if (input.length > 0) {
+            this._reset();
             try {
                 if (this.regexHex.test(input)) {
                     this._type = 'hex'
@@ -128,7 +130,7 @@ class MyColor {
                 this._reset();
                 return;
             }
-        }else{
+        } else {
             this._reset();
         }
     }
@@ -141,16 +143,23 @@ class MyColor {
         this._s = undefined;
         this._l = undefined;
         this._a = 1;
-        this._type = ''; 
+        this._type = '';
         this.hexField.value = ''
         this.rgbField.value = '';
         this.hslField.value = '';
+        if (this._isNamed) {
+            this.container.querySelector('#leNamedColor').remove();
+            this._isNamed = false;
+        }
         this.container.classList.add('disabled');
         document.body.style.backgroundColor = 'var(--fondPage)';
     }
-    
+
     update() {
-        this._getName();
+        let namedColor = this._getName();
+        if (namedColor && this._type !== 'namedColor') {
+            this._displayName(namedColor);
+        }
         this.hexField.value = this.HEX();
         this.rgbField.value = this.RGB();
         this.hslField.value = this.HSL();
@@ -186,7 +195,7 @@ class MyColor {
         this._h = Math.round(this._h);
         if (this._h < 0) this._h += 360;
         this._l = (xmax + xmin) / 2;
-        this._s = (xmax == 0 || this._l == 1) ? 0 : chroma / (1 - Math.abs(2 * xmax - chroma - 1));
+        this._s = (xmax == 0 || this._l == 1) ? 0 : chroma / (1 - Math.abs(2 * xmax - chroma - 1));
     }
 
     _getValues(input) {
@@ -416,32 +425,32 @@ class MyColor {
         const l = navigator.language;
         if ((/^fr/i).test(l)) {
             return 'fr'
-        }else{
+        } else {
             return 'en'
         }
     }
 
     _displayError(errName, errValue) {
-        let errorMessage = document.createElement('section');
-        errorMessage.setAttribute('id', 'errorMessage');
-        let p = document.createElement('p');
+        const template = document.getElementById('tmpl_error');
+        const clone = template.content.firstElementChild.cloneNode(true);
         let message = this.messages[errName][this.lang];
         let insert = `<span>${errValue}</span>`;
         message = message.replace('_', insert);
-        p.innerHTML = message;
-        errorMessage.appendChild(p);
+        clone.querySelector('p').innerHTML = message;
         this.isError = true;
         // insère en tant que 2e enfant de <main>
         const sections = this.container.querySelectorAll('section');
-        this.errorMessage = this.container.insertBefore(errorMessage, sections[1]);
+        this.errorMessage = this.container.insertBefore(clone, sections[1]);
         this.container.classList.add('error');
     }
-    
+
     clearError() {
-        if (this.isError){
+        if (this.isError) {
             this.errorMessage.addEventListener('transitionend', e => {
                 e.target.remove();
-            }, {once: true})
+            }, {
+                once: true
+            })
         }
         this.container.classList.remove('error');
     }
@@ -454,29 +463,70 @@ class MyColor {
         let sameR = namedColors_r.reduce((arr, x, idx) => {
             if (x === r) arr.push(idx);
             return arr;
-        }, []/*Accumulator to store the found indexes.*/);
-        if (sameR.length > 0){
+        }, [] /*Accumulator to store the found indexes.*/ );
+        if (sameR.length > 0) {
             // cherche les couleurs où G correspond aussi
             let sameG = [];
             sameR.forEach(x => {
                 if (namedColors_g[x] === g) sameG.push(x)
             });
-            if (sameG.length > 0){
+            if (sameG.length > 0) {
                 // Cherche si une valeur correspond aussi à B
-                sameG.forEach(x => {
-                    if (namedColors_b[x] === b) {
+                for (let i = 0; i < sameG.length; i++) {
+                    // pas de forEach() => on ne peut pas en sortir avant la fin
+                    if (namedColors_b[sameG[i]] === b) {
                         // renvoit la première correspondance
                         //(ne tient pas compte des synomnymes : 'gray'/'grey')
-                        console.log("yé! ", namedColors[x])
-                        return namedColors[x];
+                        return namedColors[sameG[i]];
                     }
-                    return false;
-                })
-            }else{
+                }
+                return false;
+            } else {
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }
+
+    _displayName(name) {
+        // Affiche une nouvelle section pour les couleurs nommées
+        const template = document.getElementById('tmpl_namedColor');
+        const clone = template.content.firstElementChild.cloneNode(true);
+        clone.querySelector('[type="text"').value = name;
+        this.btnCopy(clone.querySelector('button.copy'));
+        this.container.appendChild(clone);
+        this._isNamed = true;
+    }
+
+    btnCopy(btn) {
+        btn.addEventListener('click', e => {
+            const duration = window.getComputedStyle(e.target).transitionDuration;
+            const parent = e.target.parentElement;
+            const field = parent.querySelector('input[type=text]');
+            if (field.value.length > 0) {
+                let t = field.value;
+                console.log("to copy: ", t)
+                this._toClipboard(t)
+                e.target.style.transitionDuration = '1s';
+                e.target.classList.add('copied');
+                e.target.addEventListener('transitionend', _ => {
+                    e.target.style.transitionDuration = duration;
+                    e.target.classList.remove('copied');
+                }, {
+                    once: true
+                });
+            }
+        });
+    }
+
+    async _toClipboard(code) {
+        try {
+            await navigator.clipboard.writeText(code);
+            console.log('Copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+
 }
