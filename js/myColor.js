@@ -156,15 +156,15 @@ class MyColor {
     }
 
     update() {
+        this.hexField.value = this.HEX();
+        this.rgbField.value = this.RGB();
+        this.hslField.value = this.HSL();
         let namedColor = this._getName();
         if (namedColor && this._type !== 'namedColor') {
             this._displayName(namedColor);
         }
-        this.hexField.value = this.HEX();
-        this.rgbField.value = this.RGB();
-        this.hslField.value = this.HSL();
         this.container.classList.remove('disabled');
-        document.body.style.backgroundColor = this.RGB();
+        document.body.style.backgroundColor = this.HEX();
     }
 
     _hsl2rgb() {
@@ -459,7 +459,8 @@ class MyColor {
         let r = Math.round(this._r * 255);
         let g = Math.round(this._g * 255);
         let b = Math.round(this._b * 255);
-        // liste les indexes des couleurs nommées dont la valeur de R correspond
+        // liste les index des couleurs nommées dont la valeur de R correspond
+        // (c'est pour R qu'il y a le moins de valeurs différentes)
         let sameR = namedColors_r.reduce((arr, x, idx) => {
             if (x === r) arr.push(idx);
             return arr;
@@ -504,28 +505,42 @@ class MyColor {
             const duration = window.getComputedStyle(e.target).transitionDuration;
             const parent = e.target.parentElement;
             const field = parent.querySelector('input[type=text]');
-            if (field.value.length > 0) {
-                let t = field.value;
-                console.log("to copy: ", t)
-                this._toClipboard(t)
+            const t = field.value;
+            if (t.length > 0) {
                 e.target.style.transitionDuration = '1s';
-                e.target.classList.add('copied');
+                e.target.classList.add('copied'); // start animation
+                this._toClipboard(t); // copying
                 e.target.addEventListener('transitionend', _ => {
-                    e.target.style.transitionDuration = duration;
+                    e.target.style.transitionDuration = duration; //restore initial value
                     e.target.classList.remove('copied');
-                }, {
-                    once: true
-                });
+                }, { once: true });
             }
         });
     }
 
     async _toClipboard(code) {
-        try {
-            await navigator.clipboard.writeText(code);
-            console.log('Copied to clipboard');
-        } catch (err) {
-            console.error('Failed to copy: ', err);
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(code);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        } else {
+            // alternative method with `document.execCommand('copy')`
+            const pasteboard = document.createElement('input');
+            pasteboard.setAttribute('readonly', 'readonly');
+            pasteboard.className = 'hidden';
+            pasteboard.value = code;
+            document.body.appendChild(pasteboard);
+            // save & restore user's selection
+            const selected = (document.getSelection().rangeCount > 0) ? document.getSelection().getRangeAt(0) : false;
+            pasteboard.select();
+            const result = document.execCommand('copy');
+            document.body.removeChild(pasteboard);
+            if (selected) {
+                document.getSelection().removeAllRanges();
+                document.getSelection().addRange(selected);
+            }
         }
     }
 

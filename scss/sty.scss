@@ -98,8 +98,7 @@ button {
 
 :focus:not(:focus-visible) { outline: none }
 
-.checkbox {
-  // masque le checkbox
+.hidden {
   position: absolute;
   left: -100vw;
 }

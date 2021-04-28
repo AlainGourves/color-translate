@@ -63,7 +63,7 @@ window.addEventListener("load", e => {
       }
     }
   });
-
+  
   cog.addEventListener('click', _ => modal.open());
 
   document.querySelectorAll('.copy').forEach(b => clr.btnCopy(b));

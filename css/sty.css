@@ -95,7 +95,7 @@ button {
   outline: none;
 }
 
-.checkbox {
+.hidden {
   position: absolute;
   left: -100vw;
 }
