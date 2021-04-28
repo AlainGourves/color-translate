@@ -21,9 +21,12 @@ class MyColor {
         this.regexColor = /^([a-z]{3,})$/i;
 
         this.container = document.querySelector('main');
-        this.hexField = document.getElementById('clr-hex');
-        this.rgbField = document.getElementById('clr-rgb');
-        this.hslField = document.getElementById('clr-hsl');
+        this.hexField = document.querySelector('#clr-hex');
+        this.rgbField = document.querySelector('#clr-rgb');
+        this.hslField = document.querySelector('#clr-hsl');
+        this.colorInput = document.querySelector('#clr-input');
+        this.settingsInput = document.querySelector('#settings');
+        this.colorsList = document.querySelector('#colors-list')
 
         if (!this._loadSettings()) {
             this.settings = {
@@ -37,6 +40,64 @@ class MyColor {
         this.hexField.value = '';
         this.rgbField.value = '';
         this.hslField.value = '';
+
+        // event listeners ------------------------------------
+        // input
+        this.colorInput.addEventListener('change', e => {
+            this.updateColor(e.target.value);
+        });
+        this.colorInput.addEventListener('input', e => {
+            if (this.isError) this._clearError();
+            let q = e.target.value;
+            let regex = /^[a-z]+$/i;
+            if (q.length > 0 && regex.test(q)) {
+                regex = new RegExp(`^${q}`, 'i');
+                let matches = namedColors.filter(c => {
+                    return regex.test(c);
+                });
+                if (matches.length > 0) {
+                    this.colorsList.innerHTML = '';
+                    let optionList = '';
+                    for (let c of matches) {
+                        optionList += '<option value="' + c + '"></option>';
+                    }
+                    this.colorsList.innerHTML = optionList;
+                } else {
+                    this.colorsList.innerHTML = '';
+                }
+            }
+        });
+        // auto-complétion des parenthèses
+        this.colorInput.addEventListener('keydown', e => {
+            if (e.key === '(' || e.key === 'Backspace') {
+                let val = [...e.target.value];
+                let pos = e.target.selectionStart;
+                let changed = false;
+                switch (e.key) {
+                    case '(':
+                        val.splice(pos, 0, ')');
+                        changed = true;
+                        break;
+                    case 'Backspace':
+                        let delenda = val[pos - 1];
+                        if (delenda === '(' && val[pos] === ')') {
+                            val.splice(pos, 1);
+                            changed = true;
+                        }
+                        break;
+                }
+                if (changed) {
+                    e.target.value = val.join('');
+                    e.target.selectionEnd = pos;
+                }
+            }
+        });
+        // "Copy" buttons
+        this.container.querySelectorAll('.copy').forEach(b => this._btnCopy(b));
+        // settings
+        this.settingsInput.addEventListener('change', e => {
+            this._updateSettings(e.target.dataset.id)
+        });
 
         // gestion langues pour les messages d'erreur
         this.lang = this._getLanguage();
@@ -374,7 +435,7 @@ class MyColor {
         return '#' + output;
     }
 
-    updateSettings(what) {
+    _updateSettings(what) {
         // el contient l'id de l'input modifié
         const el = document.querySelector(`#${what}`)
 
@@ -444,7 +505,7 @@ class MyColor {
         this.container.classList.add('error');
     }
 
-    clearError() {
+    _clearError() {
         if (this.isError) {
             this.errorMessage.addEventListener('transitionend', e => {
                 e.target.remove();
@@ -495,12 +556,12 @@ class MyColor {
         const template = document.getElementById('tmpl_namedColor');
         const clone = template.content.firstElementChild.cloneNode(true);
         clone.querySelector('[type="text"').value = name;
-        this.btnCopy(clone.querySelector('button.copy'));
+        this._btnCopy(clone.querySelector('button.copy'));
         this.container.appendChild(clone);
         this._isNamed = true;
     }
 
-    btnCopy(btn) {
+    _btnCopy(btn) {
         btn.addEventListener('click', e => {
             const duration = window.getComputedStyle(e.target).transitionDuration;
             const parent = e.target.parentElement;
@@ -513,7 +574,9 @@ class MyColor {
                 e.target.addEventListener('transitionend', _ => {
                     e.target.style.transitionDuration = duration; //restore initial value
                     e.target.classList.remove('copied');
-                }, { once: true });
+                }, {
+                    once: true
+                });
             }
         });
     }
