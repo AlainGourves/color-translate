@@ -2,8 +2,8 @@ const query = document.querySelector('#leInput');
 const colorsList = document.querySelector('#colors-list')
 const newColor = document.querySelector('#clr-input');
 const settings = document.querySelector('#settings');
-// modal dialog for #settings
-const modal = new AgModal('#settings');
+// modal dialog
+const modal = new AgModal('#panel');
 const cog = document.querySelector('#cog');
 
 let clr;

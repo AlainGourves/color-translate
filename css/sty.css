@@ -30,12 +30,12 @@ Usage : @include mq('max', $tablet) {...}
 html {
   font-family: sans-serif;
 }
-@media (max-width: 480px) {
+@media (max-width: 380px) {
   html {
     font-size: 12px;
   }
 }
-@media (min-width: 480px) and (max-width: 768px) {
+@media (min-width: 380px) and (max-width: 768px) {
   html {
     font-size: 14px;
   }
@@ -224,67 +224,67 @@ input[type=text]:focus {
   outline: 0;
 }
 
-#settings {
+#panel {
+  width: clamp(380px, 100vw, 800px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #d1cfc7;
+  padding: 2rem 1em;
+}
+#panel #settings {
   display: grid;
   grid-template: auto/1fr;
   grid-auto-flow: row;
   row-gap: 1em;
   justify-items: center;
   column-gap: 2em;
-  width: clamp(480px, 100vw, 800px);
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #d1cfc7;
-  padding: 4rem 2em;
 }
 @media (min-width: 768px) {
-  #settings {
+  #panel #settings {
     grid-template: 1fr 1fr/1fr 1fr;
     grid-auto-flow: column;
     row-gap: 2em;
   }
 }
-#settings .ligne {
+#panel #settings .ligne {
   width: calc(100% - 4em);
   display: grid;
   grid-template-columns: 1fr 8rem;
   align-items: center;
   gap: 1em;
 }
-#settings .ligne > * + * {
+#panel #settings .ligne > * + * {
   justify-self: end;
 }
-#settings .ligne span {
+#panel #settings .ligne span {
   font-size: 0.875em;
   font-weight: 100;
 }
-
-.knob_wrap {
+#panel .knob_wrap {
   display: grid;
   grid-template-columns: 2.4rem 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 1em;
 }
-
-.knob {
+#panel .knob {
   grid-area: 1/1/3/2;
   display: grid;
   place-content: center;
   z-index: 1;
 }
-.knob label {
+#panel .knob label {
   width: 2.4rem;
   height: 2.4rem;
   position: relative;
   background-color: var(--clr-1);
   border-radius: 50%;
 }
-.knob label::before, .knob label::after {
+#panel .knob label::before, #panel .knob label::after {
   content: "";
   position: absolute;
   transition: transform 0.25s ease-in-out;
 }
-.knob label::before {
+#panel .knob label::before {
   --haut: 4px;
   width: var(--rayon-knob);
   height: var(--haut);
@@ -295,7 +295,7 @@ input[type=text]:focus {
   border-radius: calc(var(--haut) / 2);
   background-color: rgba(255, 255, 255, 0.45);
 }
-.knob label::after {
+#panel .knob label::after {
   width: 0;
   height: 0;
   top: 50%;
@@ -307,27 +307,25 @@ input[type=text]:focus {
   transform: translateY(-50%) rotate(var(--angleRotation));
   z-index: -1;
 }
-.knob .checkbox:checked ~ label {
+#panel .knob .checkbox:checked ~ label {
   background-color: var(--clr-1);
 }
-.knob .checkbox:checked ~ label::before, .knob .checkbox:checked ~ label::after {
+#panel .knob .checkbox:checked ~ label::before, #panel .knob .checkbox:checked ~ label::after {
   transform: translatey(-50%) rotate(calc(var(--angleRotation) * -1));
 }
-.knob .checkbox:checked ~ label::after {
+#panel .knob .checkbox:checked ~ label::after {
   border-color: transparent transparent transparent var(--clr-1);
 }
-
-.choice {
+#panel .choice {
   justify-self: start;
   align-self: center;
   font-family: sans-serif;
   color: var(--clr-1);
 }
-.choice.disabled {
+#panel .choice.disabled {
   color: #a7a7a7;
 }
-
-.toggle label {
+#panel .toggle label {
   --w: 4.2rem;
   --h: 2rem;
   --m: .2rem;
@@ -340,13 +338,13 @@ input[type=text]:focus {
   transition: background-color 0.25s linear;
   box-shadow: var(--bsh) inset;
 }
-.toggle label::before, .toggle label::after {
+#panel .toggle label::before, #panel .toggle label::after {
   content: "";
   position: absolute;
   border-radius: 50%;
   transition: left 0.125s linear;
 }
-.toggle label::before {
+#panel .toggle label::before {
   width: calc(var(--h) - (var(--m) * 2));
   height: calc(var(--h) - (var(--m) * 2));
   background: #fff;
@@ -354,7 +352,7 @@ input[type=text]:focus {
   left: var(--m);
   box-shadow: var(--bsh);
 }
-.toggle label:focus::after, .toggle label:hover::after {
+#panel .toggle label:focus::after, #panel .toggle label:hover::after {
   --l: 8px;
   width: var(--l);
   height: var(--l);
@@ -363,13 +361,13 @@ input[type=text]:focus {
   background-color: hsla(var(--clr-grey), 0.5);
   z-index: 100;
 }
-.toggle input:checked + label {
+#panel .toggle input:checked + label {
   background-color: var(--clr-1);
 }
-.toggle input:checked + label::before {
+#panel .toggle input:checked + label::before {
   left: calc(var(--w) - ((var(--h) - var(--m))));
 }
-.toggle input:checked + label:focus::after, .toggle input:checked + label:hover::after {
+#panel .toggle input:checked + label:focus::after, #panel .toggle input:checked + label:hover::after {
   left: calc(var(--w) - ((var(--h)/2 + var(--m))));
 }
 

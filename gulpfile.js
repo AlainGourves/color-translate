@@ -24,10 +24,13 @@ function style() {
 // Watch
 // server: true     => serve files from the current directory
 // open: false      => stop the browser from automatically opening
+// ghostMode: false => prevent Clicks, Scrolls & Form inputs on any device to be mirrored to all others
+// https: true
 function watch() {
     browserSync.init({
         server: true,
-        open: false
+        open: false,
+        ghostMode: false
     });
     gulp.watch('./scss/**/*.scss', style)
     gulp.watch('./css/**/*.css').on('change', reload);
