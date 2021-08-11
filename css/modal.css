@@ -68,6 +68,7 @@ body.modal-on {
   top: 1em;
   right: 1em;
   cursor: pointer;
+  border-radius: 50%;
   transition: transform 0.25s var(--cubic);
   background: var(--svg-color);
   -webkit-mask-image: url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"%3E%3Cpath fill="black" d="M15.898 4.045a.698.698 0 00-.986 0l-4.71 4.711-4.709-4.711a.698.698 0 00-.986.986l4.709 4.711-4.71 4.711a.698.698 0 00.985.986l4.711-4.711 4.71 4.711a.695.695 0 00.494.203.694.694 0 00.492-1.189l-4.711-4.711 4.711-4.711a.694.694 0 000-.986z"/%3E%3C/svg%3E');
@@ -75,6 +76,6 @@ body.modal-on {
 }
 .modal-close:hover {
   --svg-color: var(--modal-close-btn-hover);
-  transform: rotate(90deg);
+  transform: scale(1.1) rotate(90deg);
 }
 /*# sourceMappingURL=modal.css.map */

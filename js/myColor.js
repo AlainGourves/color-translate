@@ -185,6 +185,14 @@ class MyColor {
                     }
                 });
 
+                // savoir si c'est une couleur nommée
+                if (this._type !== 'namedColor') {
+                    let namedColor = this._getName();
+                    if (namedColor && this._type !== 'namedColor') {
+                        this._displayName(namedColor);
+                    }
+                }
+
                 this.update();
             } catch (err) {
                 this._displayError(err.name, err.message);
@@ -208,9 +216,9 @@ class MyColor {
         this.hexField.value = ''
         this.rgbField.value = '';
         this.hslField.value = '';
-        if (this._isNamed) {
+        if (this.isNamed) {
             this.container.querySelector('#leNamedColor').remove();
-            this._isNamed = false;
+            this.isNamed = false;
         }
         this.container.classList.add('disabled');
         document.body.style.backgroundColor = 'var(--fondPage)';
@@ -220,10 +228,6 @@ class MyColor {
         this.hexField.value = this.HEX();
         this.rgbField.value = this.RGB();
         this.hslField.value = this.HSL();
-        let namedColor = this._getName();
-        if (namedColor && this._type !== 'namedColor') {
-            this._displayName(namedColor);
-        }
         this.container.classList.remove('disabled');
         document.body.style.backgroundColor = this.HEX();
     }
@@ -558,7 +562,7 @@ class MyColor {
         clone.querySelector('[type="text"').value = name;
         this._btnCopy(clone.querySelector('button.copy'));
         this.container.appendChild(clone);
-        this._isNamed = true;
+        this.isNamed = true;
     }
 
     _btnCopy(btn) {
